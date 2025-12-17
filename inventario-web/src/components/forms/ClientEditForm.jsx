@@ -27,7 +27,14 @@ const toFormState = (client) => {
   }
 }
 
-const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit, submitting }) => {
+const ClientEditForm = ({
+  clients = [],
+  comunas = [],
+  diasReparto = [],
+  onSubmit,
+  onDeleteClient,
+  submitting,
+}) => {
   const [selectedId, setSelectedId] = useState('')
   const [form, setForm] = useState(() => toFormState(null))
 
@@ -85,6 +92,20 @@ const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit
         }),
       },
     })
+  }
+
+  const handleDeleteClient = () => {
+    if (!selectedClient || typeof onDeleteClient !== 'function') {
+      return
+    }
+    const confirmMessage = `¿Eliminar al cliente ${selectedClient.nombreCompleto}? Sus pedidos asociados se eliminarán.`
+    if (typeof window !== 'undefined') {
+      const confirmed = window.confirm(confirmMessage)
+      if (!confirmed) {
+        return
+      }
+    }
+    onDeleteClient(selectedClient.id)
   }
 
   return (
@@ -161,6 +182,16 @@ const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit
         <button type="submit" className="primary-button" disabled={submitting || !selectedClient}>
           {submitting ? 'Guardando...' : 'Guardar cambios'}
         </button>
+        {selectedClient && typeof onDeleteClient === 'function' && (
+          <button
+            type="button"
+            className="danger-button"
+            onClick={handleDeleteClient}
+            disabled={submitting}
+          >
+            {submitting ? 'Procesando...' : 'Eliminar cliente'}
+          </button>
+        )}
       </div>
     </form>
   )

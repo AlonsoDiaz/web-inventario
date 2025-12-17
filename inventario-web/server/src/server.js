@@ -322,6 +322,86 @@ app.post('/api/products/:id/price', async (req, res, next) => {
   }
 })
 
+app.delete('/api/products/:id', async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    let removedProduct = null
+    let adjustedOrderIds = []
+    let removedOrderIds = []
+
+    await mutateData((draft) => {
+      const index = draft.products.findIndex((product) => product.id === id)
+      if (index === -1) {
+        const error = new Error('Producto no encontrado')
+        error.status = 404
+        throw error
+      }
+
+      removedProduct = draft.products[index]
+      draft.products.splice(index, 1)
+
+      if (draft.pricing && draft.pricing.preciosPorComuna && typeof draft.pricing.preciosPorComuna === 'object') {
+        Object.entries(draft.pricing.preciosPorComuna).forEach(([comuna, overrides]) => {
+          if (overrides && typeof overrides === 'object' && !Array.isArray(overrides)) {
+            if (Object.prototype.hasOwnProperty.call(overrides, id)) {
+              delete overrides[id]
+            }
+            if (Object.keys(overrides).length === 0) {
+              delete draft.pricing.preciosPorComuna[comuna]
+            }
+          }
+        })
+      }
+
+      const remainingOrders = []
+
+      draft.orders.forEach((order) => {
+        if (!Array.isArray(order.items) || order.items.length === 0) {
+          remainingOrders.push(order)
+          return
+        }
+
+        const filteredItems = order.items.filter((item) => item?.productId !== id)
+
+        if (filteredItems.length === 0) {
+          removedOrderIds.push(order.id)
+          return
+        }
+
+        if (filteredItems.length !== order.items.length) {
+          order.items = filteredItems
+          order.updatedAt = toISO()
+          adjustedOrderIds.push(order.id)
+        }
+
+        remainingOrders.push(order)
+      })
+
+      draft.orders = remainingOrders
+
+      const detailParts = []
+      if (adjustedOrderIds.length) {
+        detailParts.push(`${adjustedOrderIds.length} pedidos actualizados`)
+      }
+      if (removedOrderIds.length) {
+        detailParts.push(`${removedOrderIds.length} pedidos eliminados`)
+      }
+
+      ensureActivityLog(draft, {
+        title: `Producto eliminado: ${removedProduct.name}`,
+        detail: detailParts.length ? detailParts.join(' · ') : 'Producto removido del inventario',
+      })
+
+      return draft
+    })
+
+    res.json({ productId: id, adjustedOrders: adjustedOrderIds, removedOrders: removedOrderIds })
+  } catch (error) {
+    next(error)
+  }
+})
+
 app.get('/api/clients', async (_req, res) => {
   const data = await readData()
   res.json(data.clients)
@@ -410,6 +490,48 @@ app.patch('/api/clients/:id', async (req, res, next) => {
 
     const updated = data.clients.find((c) => c.id === id)
     res.json(updated)
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.delete('/api/clients/:id', async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    let removedClient = null
+    let removedOrderIds = []
+
+    await mutateData((draft) => {
+      const index = draft.clients.findIndex((client) => client.id === id)
+      if (index === -1) {
+        const error = new Error('Cliente no encontrado')
+        error.status = 404
+        throw error
+      }
+
+      removedClient = draft.clients[index]
+      draft.clients.splice(index, 1)
+
+      const remainingOrders = []
+      draft.orders.forEach((order) => {
+        if (order.clienteId === id) {
+          removedOrderIds.push(order.id)
+          return
+        }
+        remainingOrders.push(order)
+      })
+      draft.orders = remainingOrders
+
+      ensureActivityLog(draft, {
+        title: `Cliente eliminado: ${removedClient.nombreCompleto}`,
+        detail: `${removedClient.comuna || 'Sin comuna'} · ${removedClient.telefono || 'Sin teléfono'}`,
+      })
+
+      return draft
+    })
+
+    res.json({ clientId: id, removedOrders: removedOrderIds })
   } catch (error) {
     next(error)
   }

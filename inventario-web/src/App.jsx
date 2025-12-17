@@ -365,6 +365,32 @@ function App() {
     }
   }
 
+  const handleProductDelete = async (productId) => {
+    if (!productId) {
+      showToast('Selecciona un producto para eliminar')
+      return
+    }
+
+    try {
+      setActionLoading(true)
+      await api.deleteProduct(productId)
+      showToast('Producto eliminado')
+      if (selectedProductId === productId) {
+        setSelectedProductId(null)
+      }
+      await Promise.all([
+        refreshOrders(),
+        refreshDashboard(),
+        fetchPendingClients().catch(() => null),
+      ])
+      closeModal()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const handleClientUpdate = async ({ clientId, updates }) => {
     if (!clientId) {
       showToast('Selecciona un cliente para editar')
@@ -376,6 +402,30 @@ function App() {
       await api.updateClient(clientId, updates)
       showToast('Cliente actualizado')
       await Promise.all([refreshClients(), refreshDashboard(), fetchPendingClients().catch(() => null)])
+      closeModal()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleClientDelete = async (clientId) => {
+    if (!clientId) {
+      showToast('Selecciona un cliente para eliminar')
+      return
+    }
+
+    try {
+      setActionLoading(true)
+      await api.deleteClient(clientId)
+      showToast('Cliente eliminado')
+      await Promise.all([
+        refreshClients(),
+        refreshOrders(),
+        refreshDashboard(),
+        fetchPendingClients().catch(() => null),
+      ])
       closeModal()
     } catch (err) {
       setError(err.message)
@@ -665,21 +715,21 @@ function App() {
           <div className="modal-choice-buttons">
             <button
               type="button"
-              className="primary-button"
+              className="modal-choice-button"
               onClick={() => handleEditChoice('product')}
             >
               Producto
             </button>
             <button
               type="button"
-              className="chip-button"
+              className="modal-choice-button"
               onClick={() => handleEditChoice('client')}
             >
               Cliente
             </button>
             <button
               type="button"
-              className="chip-button"
+              className="modal-choice-button"
               onClick={() => handleEditChoice('order')}
             >
               Pedido
@@ -710,6 +760,7 @@ function App() {
           <ProductEditForm
             products={dashboard.products}
             onSubmit={handleProductUpdate}
+            onDeleteProduct={handleProductDelete}
             submitting={actionLoading}
           />
         </Modal>
@@ -722,6 +773,7 @@ function App() {
             comunas={dashboard.settings?.comunas || []}
             diasReparto={dashboard.settings?.diasReparto || DELIVERY_DAYS}
             onSubmit={handleClientUpdate}
+            onDeleteClient={handleClientDelete}
             submitting={actionLoading}
           />
         </Modal>

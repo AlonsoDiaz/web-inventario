@@ -40,7 +40,7 @@ const toFormState = (product) => {
   }
 }
 
-const ProductEditForm = ({ products = [], onSubmit, submitting }) => {
+const ProductEditForm = ({ products = [], onSubmit, onDeleteProduct, submitting }) => {
   const [selectedId, setSelectedId] = useState('')
   const [form, setForm] = useState(() => toFormState(null))
 
@@ -93,6 +93,20 @@ const ProductEditForm = ({ products = [], onSubmit, submitting }) => {
       productId: selectedProduct.id,
       updates,
     })
+  }
+
+  const handleDeleteProduct = () => {
+    if (!selectedProduct || typeof onDeleteProduct !== 'function') {
+      return
+    }
+    const message = `¿Eliminar el producto ${selectedProduct.name}? Esta acción no se puede deshacer.`
+    if (typeof window !== 'undefined') {
+      const confirmed = window.confirm(message)
+      if (!confirmed) {
+        return
+      }
+    }
+    onDeleteProduct(selectedProduct.id)
   }
 
   const hasProducts = products.length > 0
@@ -173,6 +187,16 @@ const ProductEditForm = ({ products = [], onSubmit, submitting }) => {
         >
           {submitting ? 'Guardando...' : 'Guardar cambios'}
         </button>
+        {selectedProduct && typeof onDeleteProduct === 'function' && (
+          <button
+            type="button"
+            className="danger-button"
+            onClick={handleDeleteProduct}
+            disabled={submitting}
+          >
+            {submitting ? 'Procesando...' : 'Eliminar producto'}
+          </button>
+        )}
       </div>
     </form>
   )

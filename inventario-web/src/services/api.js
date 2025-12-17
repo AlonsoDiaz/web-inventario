@@ -63,6 +63,11 @@ export const api = {
       body: JSON.stringify(payload),
     })
   },
+  async deleteClient(clientId) {
+    return request(`/api/clients/${clientId}`, {
+      method: 'DELETE',
+    })
+  },
   async createOrder(payload) {
     return request('/api/orders', {
       method: 'POST',
@@ -73,6 +78,11 @@ export const api = {
     return request(`/api/products/${productId}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),
+    })
+  },
+  async deleteProduct(productId) {
+    return request(`/api/products/${productId}`, {
+      method: 'DELETE',
     })
   },
   async updateProductPrice(productId, payload) {

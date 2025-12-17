@@ -179,6 +179,27 @@ button:disabled {
   box-shadow: none;
 }
 
+.danger-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 16px 30px rgba(220, 38, 38, 0.24);
+}
+
+.danger-button:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 20px 36px rgba(220, 38, 38, 0.28);
+}
+
+.danger-button:disabled {
+  opacity: 0.65;
+  transform: none;
+  box-shadow: none;
+}
+
 .chip-button {
   padding: 0.6rem 1.1rem;
   border-radius: 999px;
@@ -899,6 +920,38 @@ tbody tr[data-selected='true'] {
   gap: 0.8rem;
 }
 
+.form-danger-zone {
+  margin-top: 1.4rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.form-danger-note {
+  margin: 0;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.form-danger-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.form-danger-row select {
+  padding: 0.58rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: #ffffff;
+  min-width: 200px;
+}
+
 .form-context {
   margin: 0;
   color: var(--text-tertiary);
@@ -1000,6 +1053,30 @@ tbody tr[data-selected='true'] {
 .modal-choice-buttons {
   display: grid;
   gap: 0.9rem;
+}
+
+.modal-choice-button {
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--shadow-inset);
+}
+
+.modal-choice-button:hover,
+.modal-choice-button:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.modal-choice-button:active {
+  transform: translateY(1px);
 }
 
 .toast {

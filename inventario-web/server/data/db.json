@@ -11,14 +11,6 @@
   ],
   "clients": [
     {
-      "id": "uMeGbrGEUcXE154r3FGzx",
-      "nombreCompleto": "Juan Carlos",
-      "telefono": "9343234",
-      "direccion": "Esmeralda 34",
-      "comuna": "Melipilla",
-      "diaReparto": "Lunes"
-    },
-    {
       "id": "WWH_dfafiTbepvIRfI_ZM",
       "nombreCompleto": "Cristian Perez",
       "telefono": "9 5436 1457",
@@ -27,32 +19,6 @@
     }
   ],
   "orders": [
-    {
-      "id": "-M71YIgUwRGBmsJysbaW9",
-      "clienteId": "uMeGbrGEUcXE154r3FGzx",
-      "estado": "completado",
-      "createdAt": "2025-12-16T21:27:30.228Z",
-      "deliveredAt": "2025-12-16T21:27:34.093Z",
-      "items": [
-        {
-          "productId": "k4Z25mxy8iwcYzmbsLv55",
-          "cantidad": 1
-        }
-      ]
-    },
-    {
-      "id": "vGWb4pHy2j853cy8XNUfp",
-      "clienteId": "uMeGbrGEUcXE154r3FGzx",
-      "estado": "completado",
-      "createdAt": "2025-12-16T21:40:04.184Z",
-      "deliveredAt": "2025-12-16T21:40:27.918Z",
-      "items": [
-        {
-          "productId": "k4Z25mxy8iwcYzmbsLv55",
-          "cantidad": 1
-        }
-      ]
-    },
     {
       "id": "aQJMwNOWFojy-ECj0ckEI",
       "clienteId": "WWH_dfafiTbepvIRfI_ZM",
@@ -63,19 +29,6 @@
         {
           "productId": "k4Z25mxy8iwcYzmbsLv55",
           "cantidad": 1
-        }
-      ]
-    },
-    {
-      "id": "PVqc_kyO0PIuKj4RSC3QA",
-      "clienteId": "uMeGbrGEUcXE154r3FGzx",
-      "estado": "completado",
-      "createdAt": "2025-12-16T23:59:51.365Z",
-      "deliveredAt": "2025-12-17T01:20:48.772Z",
-      "items": [
-        {
-          "productId": "k4Z25mxy8iwcYzmbsLv55",
-          "cantidad": 3
         }
       ]
     },
@@ -122,6 +75,24 @@
     }
   },
   "activities": [
+    {
+      "id": "KjjlXUjmaKl7LDFDNfduS",
+      "title": "Cliente eliminado: Juan Carlos",
+      "detail": "Melipilla · 9343234",
+      "createdAt": "2025-12-17T01:40:03.300Z"
+    },
+    {
+      "id": "zYHwhynWesnj4m-ckaKJi",
+      "title": "Producto actualizado: Huevos",
+      "detail": "Se actualizaron detalles del producto.",
+      "createdAt": "2025-12-17T01:39:49.703Z"
+    },
+    {
+      "id": "Btwj1E6eBfvuqdGZ59nUA",
+      "title": "Pedido creado: G355yNVzZzAIAOs3MflET",
+      "detail": "Juan Carlos · 1 ítems",
+      "createdAt": "2025-12-17T01:24:40.134Z"
+    },
     {
       "id": "mexVCEmcXvVwF3l2f4ymd",
       "title": "Ingreso registrado",
