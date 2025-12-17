@@ -13,13 +13,12 @@ const Modal = ({ title, children, onClose, actions }) => {
   }, [onClose])
 
   return (
-    <div className="modal-backdrop" role="presentation" onClick={() => onClose?.()}>
+    <div className="modal-backdrop" role="presentation">
       <div
         className="modal-card"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-heading"
-        onClick={(event) => event.stopPropagation()}
       >
         <header className="modal-header">
           <h2 id="modal-heading">{title}</h2>

@@ -5,6 +5,7 @@ const actions = [
   { key: 'edit-product', label: 'Editar' },
   { key: 'generate-report', label: 'Generar reporte' },
   { key: 'view-summary', label: 'Ver resumen' },
+  { key: 'view-client', label: 'Ver cliente' },
   { key: 'view-pending-clients', label: 'Clientes con deuda' },
   { key: 'record-cashflow', label: 'Registrar ingreso/egreso' },
   { key: 'manage-prices', label: 'Gestionar Precios' },

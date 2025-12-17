@@ -1,183 +1,93 @@
 {
   "products": [
     {
-      "id": "prod_huevos_30",
-      "name": "Caja de huevos (30 unidades)",
-      "unitPrice": 3233,
-      "category": "Huevos y lácteos",
-      "notes": "Gallinas libres, requiere refrigeración después de 48h",
-      "unit": "Caja"
-    },
-    {
-      "id": "prod_leche_1l",
-      "name": "Leche fresca entera 1L",
-      "unitPrice": 980,
-      "category": "Huevos y lácteos",
-      "notes": "Caduca 5 días posterior a la entrega",
-      "unit": "Litro"
-    },
-    {
-      "id": "prod_queso_mant",
-      "name": "Queso mantecoso 1kg",
-      "unitPrice": 7850,
-      "category": "Huevos y lácteos",
-      "notes": "Mantener entre 2 y 6°C",
-      "unit": "Kilogramo"
-    },
-    {
-      "id": "prod_pan_int",
-      "name": "Pan integral molde 500g",
-      "unitPrice": 1350,
-      "category": "Panadería",
-      "notes": "Horneado cada mañana, consumo recomendado en 48h",
-      "unit": "Unidad"
-    },
-    {
-      "id": "prod_verduras_mix",
-      "name": "Bolsa verduras mixtas 5kg",
-      "unitPrice": 11200,
-      "category": "Frutas y verduras",
-      "notes": "Incluye zanahoria, brócoli, zapallo italiano",
-      "unit": "Kilogramo"
-    },
-    {
-      "id": "vjcmIDbcTUdvUqIMjyuzf",
-      "name": "huevos",
-      "unitPrice": 1200,
+      "id": "k4Z25mxy8iwcYzmbsLv55",
+      "name": "Huevos",
+      "unitPrice": 7000,
       "category": "Huevos",
       "notes": "",
-      "unit": "Docena"
-    },
-    {
-      "id": "ag3llHqaFPhITLBPA8U2W",
-      "name": "prueba",
-      "unitPrice": 1000,
-      "category": "prueba",
-      "notes": "",
-      "unit": "Unidad"
+      "unit": "Bandeja"
     }
   ],
   "clients": [
     {
-      "id": "cli_juan_perez",
-      "nombreCompleto": "Juan Pérez",
-      "telefono": "912345678",
-      "direccion": "Av. Los Alerces 123",
-      "comuna": "Maipú",
-      "diaReparto": "Lunes"
-    },
-    {
-      "id": "cli_maria_lopez",
-      "nombreCompleto": "María López",
-      "telefono": "987654321",
-      "direccion": "Calle Las Rosas 452",
-      "comuna": "La Florida",
-      "diaReparto": "Miércoles"
-    },
-    {
-      "id": "cli_carlos_silva",
-      "nombreCompleto": "Carlos Silva",
-      "telefono": "956789123",
-      "direccion": "Pasaje 12 de Octubre 233",
-      "comuna": "Puente Alto",
-      "diaReparto": "Viernes"
-    },
-    {
-      "id": "b8lAOuKq8HnHmd97MU8uF",
-      "nombreCompleto": "Carlos Ruiz",
-      "telefono": "3123123",
-      "direccion": "esmeralda 32",
+      "id": "uMeGbrGEUcXE154r3FGzx",
+      "nombreCompleto": "Juan Carlos",
+      "telefono": "9343234",
+      "direccion": "Esmeralda 34",
       "comuna": "Melipilla",
-      "diaReparto": "Sábado"
-    },
-    {
-      "id": "XyMfJjAaVUvNSvaoZ4rY_",
-      "nombreCompleto": "Prueba ",
-      "telefono": "31231 ",
-      "direccion": "dasd",
-      "comuna": "San Joaquín",
       "diaReparto": "Lunes"
     },
     {
-      "id": "5CZJv2xJ7j9gDnQqnYjZn",
-      "nombreCompleto": "Juan bodoke",
-      "telefono": "123123312",
-      "direccion": "lira 123",
-      "comuna": "Providencia"
-    },
-    {
-      "id": "KzUnfnFIDsPM1-6bXKs8H",
-      "nombreCompleto": "aaaa",
-      "telefono": "123",
-      "direccion": "dawd",
-      "comuna": "La Florida"
+      "id": "WWH_dfafiTbepvIRfI_ZM",
+      "nombreCompleto": "Cristian Perez",
+      "telefono": "9 5436 1457",
+      "direccion": "Lirios 323",
+      "comuna": "Maipú"
     }
   ],
   "orders": [
     {
-      "id": "ord_0001",
-      "clienteId": "cli_juan_perez",
+      "id": "-M71YIgUwRGBmsJysbaW9",
+      "clienteId": "uMeGbrGEUcXE154r3FGzx",
       "estado": "completado",
-      "createdAt": "2025-12-08T18:43:00.000Z",
+      "createdAt": "2025-12-16T21:27:30.228Z",
+      "deliveredAt": "2025-12-16T21:27:34.093Z",
       "items": [
         {
-          "productId": "prod_huevos_30",
-          "cantidad": 6
-        },
-        {
-          "productId": "prod_pan_int",
-          "cantidad": 4
-        }
-      ]
-    },
-    {
-      "id": "ord_0002",
-      "clienteId": "cli_maria_lopez",
-      "estado": "completado",
-      "createdAt": "2025-12-08T15:12:00.000Z",
-      "items": [
-        {
-          "productId": "prod_leche_1l",
-          "cantidad": 24
-        },
-        {
-          "productId": "prod_queso_mant",
-          "cantidad": 2
-        }
-      ]
-    },
-    {
-      "id": "ord_0003",
-      "clienteId": "cli_carlos_silva",
-      "estado": "completado",
-      "createdAt": "2025-12-07T21:47:00.000Z",
-      "items": [
-        {
-          "productId": "prod_verduras_mix",
-          "cantidad": 3
-        }
-      ]
-    },
-    {
-      "id": "ecn66t-6hY3n9e9qJbMl4",
-      "clienteId": "KzUnfnFIDsPM1-6bXKs8H",
-      "estado": "pendiente",
-      "createdAt": "2025-12-09T12:50:34.778Z",
-      "items": [
-        {
-          "productId": "ag3llHqaFPhITLBPA8U2W",
+          "productId": "k4Z25mxy8iwcYzmbsLv55",
           "cantidad": 1
         }
       ]
     },
     {
-      "id": "uQ__Pe6rt0UQ0zmtcWWwy",
-      "clienteId": "b8lAOuKq8HnHmd97MU8uF",
+      "id": "vGWb4pHy2j853cy8XNUfp",
+      "clienteId": "uMeGbrGEUcXE154r3FGzx",
       "estado": "completado",
-      "createdAt": "2025-12-09T12:50:45.662Z",
+      "createdAt": "2025-12-16T21:40:04.184Z",
+      "deliveredAt": "2025-12-16T21:40:27.918Z",
       "items": [
         {
-          "productId": "ag3llHqaFPhITLBPA8U2W",
+          "productId": "k4Z25mxy8iwcYzmbsLv55",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "aQJMwNOWFojy-ECj0ckEI",
+      "clienteId": "WWH_dfafiTbepvIRfI_ZM",
+      "estado": "completado",
+      "createdAt": "2025-12-16T21:40:12.891Z",
+      "deliveredAt": "2025-12-16T21:40:28.834Z",
+      "items": [
+        {
+          "productId": "k4Z25mxy8iwcYzmbsLv55",
+          "cantidad": 1
+        }
+      ]
+    },
+    {
+      "id": "PVqc_kyO0PIuKj4RSC3QA",
+      "clienteId": "uMeGbrGEUcXE154r3FGzx",
+      "estado": "completado",
+      "createdAt": "2025-12-16T23:59:51.365Z",
+      "deliveredAt": "2025-12-17T01:20:48.772Z",
+      "items": [
+        {
+          "productId": "k4Z25mxy8iwcYzmbsLv55",
+          "cantidad": 3
+        }
+      ]
+    },
+    {
+      "id": "I9bgFVOeKQZ2TOkUlOyJZ",
+      "clienteId": "WWH_dfafiTbepvIRfI_ZM",
+      "estado": "completado",
+      "createdAt": "2025-12-17T01:20:20.450Z",
+      "deliveredAt": "2025-12-17T01:20:52.239Z",
+      "items": [
+        {
+          "productId": "k4Z25mxy8iwcYzmbsLv55",
           "cantidad": 1
         }
       ]
@@ -185,258 +95,128 @@
   ],
   "cashflow": [
     {
-      "id": "cf_ing_001",
+      "id": "UId1SKy3qmk-PKPMyV4Gp",
       "type": "ingreso",
-      "amount": 185000,
-      "category": "Ventas mayoristas",
-      "description": "Liquidación pedidos semana 48",
-      "date": "2025-12-08T13:30:00.000Z",
-      "createdAt": "2025-12-08T13:35:00.000Z"
-    },
-    {
-      "id": "cf_ing_002",
-      "type": "ingreso",
-      "amount": 45200,
-      "category": "Rutas diarias",
-      "description": "Cobro entregas martes",
-      "date": "2025-12-08T23:15:00.000Z",
-      "createdAt": "2025-12-08T23:16:00.000Z"
-    },
-    {
-      "id": "cf_egr_001",
-      "type": "egreso",
-      "amount": 68500,
-      "category": "Compras proveedores",
-      "description": "Pago proveedor huevos",
-      "date": "2025-12-07T17:00:00.000Z",
-      "createdAt": "2025-12-07T17:05:00.000Z"
-    },
-    {
-      "id": "IoY6fKVf1Xi3u1CNWXpLY",
-      "type": "ingreso",
-      "amount": 100000,
-      "category": "Venta",
-      "description": "",
-      "date": "2025-12-09T00:00:00.000Z",
-      "createdAt": "2025-12-09T03:13:36.616Z"
-    },
-    {
-      "id": "yCmIoP7zEpowUSQY-jQGd",
-      "type": "egreso",
-      "amount": 100000,
-      "category": "dawd",
-      "description": "d",
-      "date": "2025-12-09T00:00:00.000Z",
-      "createdAt": "2025-12-09T03:13:54.422Z"
-    },
-    {
-      "id": "MvabjiufIB2Wpcw8iR0WH",
-      "type": "ingreso",
-      "amount": 39220,
+      "amount": 24000,
       "category": "Ventas",
-      "description": "Venta a María López",
-      "date": "2025-12-09T03:16:51.346Z",
-      "createdAt": "2025-12-09T03:16:51.346Z"
+      "description": "Venta a Juan Carlos",
+      "date": "2025-12-17T01:20:48.784Z",
+      "createdAt": "2025-12-17T01:20:48.784Z"
     },
     {
-      "id": "KcWOJspmFWXIBl6k9jurL",
+      "id": "eSa6uEMHCrkUa9Lew_NQF",
       "type": "ingreso",
-      "amount": 33600,
+      "amount": 7000,
       "category": "Ventas",
-      "description": "Venta a Carlos Silva",
-      "date": "2025-12-09T11:51:23.235Z",
-      "createdAt": "2025-12-09T11:51:23.235Z"
-    },
-    {
-      "id": "SUulkokTKey4FX1CyxsoG",
-      "type": "ingreso",
-      "amount": 2000,
-      "category": "Ventas",
-      "description": "Venta a Carlos Ruiz",
-      "date": "2025-12-09T14:04:51.303Z",
-      "createdAt": "2025-12-09T14:04:51.303Z"
+      "description": "Venta a Cristian Perez",
+      "date": "2025-12-17T01:20:52.253Z",
+      "createdAt": "2025-12-17T01:20:52.253Z"
     }
   ],
   "pricing": {
-    "precioCaja": 7200,
+    "precioCaja": 0,
     "preciosPorComuna": {
       "Melipilla": {
-        "__general__": 7600,
-        "ag3llHqaFPhITLBPA8U2W": 2000
-      },
-      "Providencia": {
-        "__general__": 7350
-      },
-      "Puente Alto": {
-        "__general__": 7320
-      },
-      "La Florida": {
-        "__general__": 1000
+        "k4Z25mxy8iwcYzmbsLv55": 8000
       }
     }
   },
   "activities": [
     {
-      "id": "AWVb4Ti_5Xarj3Ww0oezR",
+      "id": "mexVCEmcXvVwF3l2f4ymd",
       "title": "Ingreso registrado",
-      "detail": "Ventas · $2.000",
-      "createdAt": "2025-12-09T14:04:51.329Z"
+      "detail": "Ventas · $7.000",
+      "createdAt": "2025-12-17T01:20:52.285Z"
     },
     {
-      "id": "MnncRb0_KyyAJTWSVOfSd",
-      "title": "Pedido entregado: uQ__Pe6rt0UQ0zmtcWWwy",
-      "detail": "Carlos Ruiz · Melipilla · Pedido uQ__Pe6rt0UQ0zmtcWWwy",
-      "createdAt": "2025-12-09T14:04:51.294Z"
+      "id": "qfgCKvxSJiwDLeBpDDCfs",
+      "title": "Pedido entregado: I9bgFVOeKQZ2TOkUlOyJZ",
+      "detail": "Cristian Perez · Maipú · Pedido I9bgFVOeKQZ2TOkUlOyJZ",
+      "createdAt": "2025-12-17T01:20:52.242Z"
     },
     {
-      "id": "sgrbaPgfKpx53kR-PYowX",
+      "id": "jmt4GIF_TggaFJEBzCJVj",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $24.000",
+      "createdAt": "2025-12-17T01:20:48.809Z"
+    },
+    {
+      "id": "SCVABVQjMJj2nzTtwAxWx",
+      "title": "Pedido entregado: PVqc_kyO0PIuKj4RSC3QA",
+      "detail": "Juan Carlos · Melipilla · Pedido PVqc_kyO0PIuKj4RSC3QA",
+      "createdAt": "2025-12-17T01:20:48.773Z"
+    },
+    {
+      "id": "9dsfoReOxRpWZ-Qllg5fb",
+      "title": "Pedido creado: I9bgFVOeKQZ2TOkUlOyJZ",
+      "detail": "Cristian Perez · 1 ítems",
+      "createdAt": "2025-12-17T01:20:20.451Z"
+    },
+    {
+      "id": "ApDtfWTEIK26FfdPgSC83",
+      "title": "Pedido creado: PVqc_kyO0PIuKj4RSC3QA",
+      "detail": "Juan Carlos · 1 ítems",
+      "createdAt": "2025-12-16T23:59:51.367Z"
+    },
+    {
+      "id": "7xsflu_CVZcA8pXn4REUI",
+      "title": "Pedido entregado: aQJMwNOWFojy-ECj0ckEI",
+      "detail": "Cristian Perez · Maipú · Pedido aQJMwNOWFojy-ECj0ckEI",
+      "createdAt": "2025-12-16T21:40:28.836Z"
+    },
+    {
+      "id": "RxRwNkEIBfrHfInLk_RHf",
+      "title": "Pedido entregado: vGWb4pHy2j853cy8XNUfp",
+      "detail": "Juan Carlos · Melipilla · Pedido vGWb4pHy2j853cy8XNUfp",
+      "createdAt": "2025-12-16T21:40:27.919Z"
+    },
+    {
+      "id": "gIEuQ-VwVrJYuf5HLu0Ot",
+      "title": "Pedido creado: aQJMwNOWFojy-ECj0ckEI",
+      "detail": "Cristian Perez · 1 ítems",
+      "createdAt": "2025-12-16T21:40:12.892Z"
+    },
+    {
+      "id": "YQ_MhoQvTxVeb6NCY9rUf",
+      "title": "Pedido creado: vGWb4pHy2j853cy8XNUfp",
+      "detail": "Juan Carlos · 1 ítems",
+      "createdAt": "2025-12-16T21:40:04.185Z"
+    },
+    {
+      "id": "M-xlTx6gsXCvv6L7vil6N",
       "title": "Precio por comuna actualizado",
-      "detail": "prueba · Melipilla → $2.000",
-      "createdAt": "2025-12-09T13:01:55.206Z"
+      "detail": "Huevos · Melipilla → $8.000",
+      "createdAt": "2025-12-16T21:39:33.230Z"
     },
     {
-      "id": "rWJEX3Bi4HfZWQCsS0DIj",
-      "title": "Pedido creado: uQ__Pe6rt0UQ0zmtcWWwy",
-      "detail": "Carlos Ruiz · 1 ítems",
-      "createdAt": "2025-12-09T12:50:45.663Z"
+      "id": "lbHVg_gtszPaqY2i6FnaJ",
+      "title": "Cliente agregado: Cristian Perez",
+      "detail": "Maipú · 9 5436 1457",
+      "createdAt": "2025-12-16T21:39:17.337Z"
     },
     {
-      "id": "hchswEkh4tC-ySqyE_uU4",
-      "title": "Pedido creado: ecn66t-6hY3n9e9qJbMl4",
-      "detail": "aaaa · 1 ítems",
-      "createdAt": "2025-12-09T12:50:34.779Z"
+      "id": "zSw6_KtV9AKHNtm-etsYQ",
+      "title": "Pedido entregado: -M71YIgUwRGBmsJysbaW9",
+      "detail": "Juan Carlos · Melipilla · Pedido -M71YIgUwRGBmsJysbaW9",
+      "createdAt": "2025-12-16T21:27:34.094Z"
     },
     {
-      "id": "brD-QxZmjLVwGeUQ-kTph",
-      "title": "Cliente agregado: aaaa",
-      "detail": "La Florida · 123",
-      "createdAt": "2025-12-09T12:50:27.343Z"
+      "id": "XRSnIQkJjqGkxoIsePvdw",
+      "title": "Pedido creado: -M71YIgUwRGBmsJysbaW9",
+      "detail": "Juan Carlos · 1 ítems",
+      "createdAt": "2025-12-16T21:27:30.229Z"
     },
     {
-      "id": "2G6EwW1n0erTlqfAFcCTF",
-      "title": "Pedido cancelado: Q701D6ARUp6ONb_NlULuf",
-      "detail": "Prueba  · San Joaquín · Pedido Q701D6ARUp6ONb_NlULuf",
-      "createdAt": "2025-12-09T12:50:13.990Z"
-    },
-    {
-      "id": "Iy81bUDzZQcyKfl8QEVeo",
-      "title": "Pedido cancelado: MZ9U0SgdVqbivUA1uL7em",
-      "detail": "Juan Pérez · Maipú · Pedido MZ9U0SgdVqbivUA1uL7em",
-      "createdAt": "2025-12-09T12:50:12.558Z"
-    },
-    {
-      "id": "px0XZgJwHsI3hLlBgXDSA",
-      "title": "Precio por comuna actualizado",
-      "detail": "La Florida → $1.000",
-      "createdAt": "2025-12-09T12:50:06.442Z"
-    },
-    {
-      "id": "cGJpv55Lx91C2b3gGswQH",
-      "title": "Producto actualizado: Caja de huevos (30 unidades)",
-      "detail": "Se actualizaron detalles del producto.",
-      "createdAt": "2025-12-09T12:28:56.330Z"
-    },
-    {
-      "id": "Vve7KmIlFSNPRn6CHEAMJ",
-      "title": "Pedido creado: Q701D6ARUp6ONb_NlULuf",
-      "detail": "Prueba  · 1 ítems",
-      "createdAt": "2025-12-09T12:09:18.761Z"
-    },
-    {
-      "id": "miKFSTOJUq5C4d7c3U_xJ",
-      "title": "Producto creado: prueba",
+      "id": "1xvmiDCYRi6wcKBU9dFca",
+      "title": "Producto creado: Huevos",
       "detail": "Nuevo producto agregado al inventario",
-      "createdAt": "2025-12-09T12:01:23.582Z"
+      "createdAt": "2025-12-16T21:27:17.426Z"
     },
     {
-      "id": "_-YqdBvd-CNwRSi5Ah9Tt",
-      "title": "Pedido creado: MZ9U0SgdVqbivUA1uL7em",
-      "detail": "Juan Pérez · 1 ítems",
-      "createdAt": "2025-12-09T11:53:00.928Z"
-    },
-    {
-      "id": "p_bHennqClbR-3YcPDG2K",
-      "title": "Producto creado: huevos",
-      "detail": "Nuevo producto agregado al inventario",
-      "createdAt": "2025-12-09T11:52:47.331Z"
-    },
-    {
-      "id": "5ZfBRP0ESX05_DblLYbME",
-      "title": "Cliente agregado: Juan bodoke",
-      "detail": "Providencia · 123123312",
-      "createdAt": "2025-12-09T11:52:17.077Z"
-    },
-    {
-      "id": "lB9zGZyR0gFTg8noY1cSB",
-      "title": "Ingreso registrado",
-      "detail": "Ventas · $33.600",
-      "createdAt": "2025-12-09T11:51:23.255Z"
-    },
-    {
-      "id": "pSydUsu_SIG7oo_FgrNaK",
-      "title": "Pedido entregado: ord_0003",
-      "detail": "Carlos Silva · Puente Alto · Pedido ord_0003",
-      "createdAt": "2025-12-09T11:51:23.229Z"
-    },
-    {
-      "id": "hoSauXLu5LLb9f-HBGKXx",
-      "title": "Ingreso registrado",
-      "detail": "Ventas · $39.220",
-      "createdAt": "2025-12-09T03:16:51.368Z"
-    },
-    {
-      "id": "H-2R0ICVEbabSepxSwOKp",
-      "title": "Pedido entregado: ord_0002",
-      "detail": "María López · La Florida · Pedido ord_0002",
-      "createdAt": "2025-12-09T03:16:51.338Z"
-    },
-    {
-      "id": "4Hq_sdvbkLNMMwNaw_Vui",
-      "title": "Egreso registrado",
-      "detail": "dawd · $100.000",
-      "createdAt": "2025-12-09T03:13:54.440Z"
-    },
-    {
-      "id": "tFPZ3v9I7Nzt4TUD611Si",
-      "title": "Ingreso registrado",
-      "detail": "Venta · $100.000",
-      "createdAt": "2025-12-09T03:13:36.636Z"
-    },
-    {
-      "id": "cQRyn1Fp90Ojry8JjmUDy",
-      "title": "Pedido entregado: ord_0001",
-      "detail": "Juan Pérez · Maipú · Pedido ord_0001",
-      "createdAt": "2025-12-09T02:45:44.930Z"
-    },
-    {
-      "id": "AykqWhtJqesfmoZbqKzl9",
-      "title": "Cliente agregado: Prueba ",
-      "detail": "San Joaquín · 31231  · Entrega Lunes",
-      "createdAt": "2025-12-09T02:25:20.014Z"
-    },
-    {
-      "id": "act_201",
-      "title": "Pedido ord_0002 en preparación",
-      "detail": "24 L de leche y 2 bloques de queso listos para despacho frío.",
-      "createdAt": "2025-12-08T15:30:00.000Z"
-    },
-    {
-      "id": "act_202",
-      "title": "Precio actualizado: Caja de huevos (30 unidades)",
-      "detail": "Nuevo precio base $7.200 por caja.",
-      "createdAt": "2025-12-08T12:05:00.000Z"
-    },
-    {
-      "id": "act_203",
-      "title": "Recordatorio compra: Queso mantecoso 1kg",
-      "detail": "Priorizar proveedor habitual antes de la ruta de mañana.",
-      "createdAt": "2025-12-08T10:15:00.000Z"
-    },
-    {
-      "id": "act_204",
-      "title": "Cliente agregado: Distribuidora Norte",
-      "detail": "Contacto primario Laura Ortiz. Segmento mayorista.",
-      "createdAt": "2025-12-07T20:40:00.000Z"
+      "id": "pHU-HsrBOH7QrPEgkcfSz",
+      "title": "Cliente agregado: Juan Carlos",
+      "detail": "Melipilla · 9343234 · Entrega Lunes",
+      "createdAt": "2025-12-16T21:26:07.355Z"
     }
   ],
   "settings": {

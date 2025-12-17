@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { formatChileanPhone, sanitizeChileanPhoneDigits } from '../utils/phoneInput'
 
 const ALL_VALUE = 'ALL'
 
@@ -6,6 +7,7 @@ const normalizeText = (value) => {
   if (value == null) {
     return ''
   }
+
   return value
     .toString()
     .normalize('NFD')
@@ -14,12 +16,48 @@ const normalizeText = (value) => {
     .trim()
 }
 
+const UNIT_SYNONYMS = {
+  unidad: 'unidad',
+  unidades: 'unidad',
+  unit: 'unidad',
+  u: 'unidad',
+  kg: 'kg',
+  kilo: 'kg',
+  kilos: 'kg',
+  kilogramo: 'kg',
+  gramos: 'g',
+  gr: 'g',
+  g: 'g',
+  grs: 'g',
+  litro: 'litro',
+  litros: 'litro',
+  lt: 'litro',
+  lts: 'litro',
+  l: 'litro',
+}
+
 const formatUnitLabel = (unit) => {
   if (typeof unit !== 'string') {
     return 'unidad'
   }
-  const normalized = unit.trim()
-  return normalized.length ? normalized.toLowerCase() : 'unidad'
+
+  const normalized = unit.trim().toLowerCase()
+  if (!normalized) {
+    return 'unidad'
+  }
+
+  return UNIT_SYNONYMS[normalized] ?? normalized
+}
+
+const formatUnitLabelForExport = (unit) => {
+  const label = formatUnitLabel(unit)
+  if (label === 'kg' || label === 'g') {
+    return label
+  }
+  if (label === 'litro') {
+    return 'Litro'
+  }
+  return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
 const formatQuantity = (quantity) => {
@@ -42,29 +80,25 @@ const PendingClientsPanel = ({
   isUpdating = false,
   processingClientId = null,
 }) => {
-  const clients = data?.clients || []
+  const clients = data?.clients ?? []
 
-  const sortLocale = (a, b) => a.localeCompare(b, 'es-CL')
+  const collator = useMemo(() => new Intl.Collator('es-CL'), [])
 
-  const availableComunas = useMemo(
-    () =>
-      Array.from(new Set(clients.map((entry) => entry.client.comuna).filter(Boolean))).sort(
-        sortLocale,
+  const availableComunas = useMemo(() => {
+    return Array.from(
+      new Set(clients.map((entry) => entry.client.comuna).filter(Boolean)),
+    ).sort(collator.compare)
+  }, [clients, collator])
+
+  const availableDias = useMemo(() => {
+    return Array.from(
+      new Set(
+        clients
+          .map((entry) => entry.client.diaReparto)
+          .filter((dia) => typeof dia === 'string' && dia.trim()),
       ),
-    [clients],
-  )
-
-  const availableDias = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          clients
-            .map((entry) => entry.client.diaReparto)
-            .filter((dia) => typeof dia === 'string' && dia.trim()),
-        ),
-      ).sort(sortLocale),
-    [clients],
-  )
+    ).sort(collator.compare)
+  }, [clients, collator])
 
   const [filters, setFilters] = useState({ comuna: ALL_VALUE, diaReparto: ALL_VALUE })
 
@@ -81,6 +115,7 @@ const PendingClientsPanel = ({
   }, [filters.diaReparto, availableDias])
 
   const normalizedSearch = useMemo(() => normalizeText(searchTerm), [searchTerm])
+  const phoneSearchDigits = useMemo(() => sanitizeChileanPhoneDigits(searchTerm), [searchTerm])
 
   const filteredClients = useMemo(() => {
     return clients.filter((entry) => {
@@ -88,52 +123,80 @@ const PendingClientsPanel = ({
         filters.comuna === ALL_VALUE || entry.client.comuna === filters.comuna
       const matchDia =
         filters.diaReparto === ALL_VALUE || entry.client.diaReparto === filters.diaReparto
+
       if (!matchComuna || !matchDia) {
         return false
       }
 
-      if (!normalizedSearch) {
+      if (!normalizedSearch && !phoneSearchDigits) {
         return true
       }
 
-      const haystacks = [
-        entry.client.nombreCompleto,
-        entry.client.telefono,
-        entry.client.direccion,
-        entry.client.comuna,
-        entry.client.diaReparto,
-      ]
-        .filter(Boolean)
-        .map((value) => normalizeText(value))
+      if (normalizedSearch) {
+        const textHaystacks = [
+          entry.client.nombreCompleto,
+          entry.client.telefono,
+          entry.client.direccion,
+          entry.client.comuna,
+          entry.client.diaReparto,
+        ]
+          .filter(Boolean)
+          .map((value) => normalizeText(value))
 
-      if (haystacks.some((value) => value.includes(normalizedSearch))) {
-        return true
+        if (textHaystacks.some((value) => value.includes(normalizedSearch))) {
+          return true
+        }
+
+        const productMatch = Array.isArray(entry.products)
+          ? entry.products.some((product) =>
+              normalizeText(product.product?.name).includes(normalizedSearch),
+            )
+          : false
+
+        if (productMatch) {
+          return true
+        }
+
+        if (
+          Array.isArray(entry.orderIds) &&
+          entry.orderIds.some((id) => normalizeText(id).includes(normalizedSearch))
+        ) {
+          return true
+        }
       }
 
-      const productMatch = entry.products.some((product) => {
-        const productStack = normalizeText(product.product.name)
-        return productStack.includes(normalizedSearch)
-      })
+      if (phoneSearchDigits) {
+        const digitsHaystacks = [sanitizeChileanPhoneDigits(entry.client.telefono)]
 
-      if (productMatch) {
-        return true
-      }
+        if (Array.isArray(entry.orderIds)) {
+          entry.orderIds.forEach((id) => {
+            const digits = sanitizeChileanPhoneDigits(id)
+            if (digits) {
+              digitsHaystacks.push(digits)
+            }
+          })
+        }
 
-      if (Array.isArray(entry.orderIds)) {
-        const idMatch = entry.orderIds.some((id) => normalizeText(id).includes(normalizedSearch))
-        if (idMatch) {
+        if (digitsHaystacks.some((digits) => digits.includes(phoneSearchDigits))) {
           return true
         }
       }
 
       return false
     })
-  }, [clients, filters, normalizedSearch])
+  }, [clients, filters, normalizedSearch, phoneSearchDigits])
 
-  const totalAmount = filteredClients.reduce((acc, entry) => acc + entry.totalAmount, 0)
-  const totalUnits = filteredClients.reduce((acc, entry) => acc + (entry.totalUnits || 0), 0)
+  const totalAmount = filteredClients.reduce(
+    (acc, entry) => acc + (Number(entry.totalAmount) || 0),
+    0,
+  )
+  const totalUnits = filteredClients.reduce(
+    (acc, entry) => acc + (Number(entry.totalUnits) || 0),
+    0,
+  )
+
   const filtersApplied = filters.comuna !== ALL_VALUE || filters.diaReparto !== ALL_VALUE
-  const searchApplied = Boolean(normalizedSearch)
+  const searchApplied = Boolean(normalizedSearch || phoneSearchDigits)
   const searchLabel = searchTerm.trim()
   const showContextTotal = filtersApplied || searchApplied
   const canExport = filteredClients.length > 0
@@ -163,82 +226,276 @@ const PendingClientsPanel = ({
     onCancelOrders(entry)
   }
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (exportDisabled) {
       return
     }
 
-    const headers = [
-      'Nombre cliente',
-      'Teléfono',
-      'Dirección',
-      'Comuna',
-      'Día reparto',
-      'Producto',
-      'Cantidad',
-      'Precio unitario',
-      'Subtotal',
-      'Total cliente',
-    ]
+    try {
+      // Prepara catálogo de productos para columnas dinámicas.
+      const productDefinitionMap = new Map()
+      filteredClients.forEach((entry) => {
+        if (!Array.isArray(entry.products)) {
+          return
+        }
 
-    const escapeCell = (value) => {
-      const stringValue = value ?? ''
-      const normalized = typeof stringValue === 'string' ? stringValue : String(stringValue)
-      const needsQuotes = /[";\n]/.test(normalized)
-      const escaped = normalized.replace(/"/g, '""')
-      return needsQuotes ? `"${escaped}"` : escaped
-    }
+        entry.products.forEach((item) => {
+          const unitLabel = formatUnitLabelForExport(item.product.unit)
+          const productKey = `${item.product.id ?? item.product.name}__${unitLabel}`
+          const quantityNumber = Number(item.quantity) || 0
+          const unitPriceNumber = Number(item.product.unitPrice) || 0
 
-    const rows = []
+          if (!productDefinitionMap.has(productKey)) {
+            productDefinitionMap.set(productKey, {
+              key: productKey,
+              name: item.product.name,
+              unitLabel,
+              header:
+                unitLabel && unitLabel.length
+                  ? `${item.product.name} (${unitLabel})`
+                  : item.product.name,
+              unitPrice: unitPriceNumber,
+            })
+          }
 
-    filteredClients.forEach((entry) => {
-      const { client, products, totalAmount } = entry
-
-      products.forEach((item, index) => {
-        const isFirstRowForClient = index === 0
-        rows.push([
-          isFirstRowForClient ? client.nombreCompleto : '',
-          isFirstRowForClient ? client.telefono : '',
-          isFirstRowForClient ? client.direccion : '',
-          isFirstRowForClient ? client.comuna : '',
-          isFirstRowForClient ? client.diaReparto || '' : '',
-          item.product.name,
-          item.quantity,
-          item.product.unitPrice,
-          item.subtotal,
-          isFirstRowForClient ? totalAmount : '',
-        ])
+          const definition = productDefinitionMap.get(productKey)
+          definition.totalQuantity = (definition.totalQuantity || 0) + quantityNumber
+          definition.totalSubtotal = (definition.totalSubtotal || 0) + unitPriceNumber * quantityNumber
+        })
       })
 
-      if (products.length > 0) {
-        // Espacio entre clientes para mejor lectura
-        rows.push(new Array(headers.length).fill(''))
+      const grandTotalAmount = filteredClients.reduce(
+        (sum, entry) => sum + (Number(entry.totalAmount) || 0),
+        0,
+      )
+
+      // Lazy-load the browser build to avoid bundler issues with ExcelJS' node path.
+      const excelModule = await import('exceljs/dist/exceljs.min.js')
+      const ExcelNamespace = excelModule?.default ?? excelModule
+      if (!ExcelNamespace?.Workbook) {
+        throw new Error('No se pudo cargar exceljs.Workbook')
       }
-    })
 
-    if (rows.length > 0 && rows[rows.length - 1].every((cell) => cell === '')) {
-      rows.pop()
+      const workbook = new ExcelNamespace.Workbook()
+      workbook.creator = 'Inventario Web'
+      workbook.created = new Date()
+
+      const worksheet = workbook.addWorksheet('Clientes pendientes', {
+        views: [{ state: 'frozen', ySplit: 1 }],
+        pageSetup: {
+          orientation: 'landscape',
+          fitToPage: true,
+          fitToWidth: 1,
+          fitToHeight: 0,
+          margins: { left: 0.3, right: 0.3, top: 0.5, bottom: 0.5, header: 0.2, footer: 0.2 },
+        },
+      })
+
+      const productColumns = Array.from(productDefinitionMap.values()).sort((a, b) =>
+        collator.compare(a.header, b.header),
+      )
+
+      const baseColumns = [
+        { header: 'Nombre completo', key: 'cliente', width: 28 },
+        { header: 'Teléfono', key: 'telefono', width: 16 },
+        { header: 'Dirección', key: 'direccion', width: 30 },
+        { header: 'Comuna', key: 'comuna', width: 18 },
+      ]
+
+      const productExcelColumns = productColumns.map((column) => ({
+        header: column.header,
+        key: column.key,
+        width: 20,
+      }))
+
+      const tailColumns = [
+        { header: 'Monto a pagar', key: 'totalCliente', width: 16 },
+        { header: 'Pagado (Sí/No)', key: 'pagado', width: 14 },
+        { header: 'Método de pago', key: 'metodoPago', width: 18 },
+      ]
+
+      const columns = [...baseColumns, ...productExcelColumns, ...tailColumns]
+
+      worksheet.columns = columns
+
+      const headerRow = worksheet.getRow(1)
+      columns.forEach((column, index) => {
+        headerRow.getCell(index + 1).value = column.header
+      })
+      headerRow.height = 20
+      headerRow.eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }
+        cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: false }
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF111827' },
+        }
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FF000000' } },
+          left: { style: 'thin', color: { argb: 'FF000000' } },
+          bottom: { style: 'thin', color: { argb: 'FF000000' } },
+          right: { style: 'thin', color: { argb: 'FF000000' } },
+        }
+      })
+
+      const addBorders = (row) => {
+        for (let columnIndex = 1; columnIndex <= columns.length; columnIndex += 1) {
+          const cell = row.getCell(columnIndex)
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FF000000' } },
+            left: { style: 'thin', color: { argb: 'FF000000' } },
+            bottom: { style: 'thin', color: { argb: 'FF000000' } },
+            right: { style: 'thin', color: { argb: 'FF000000' } },
+          }
+        }
+      }
+
+      const formatCurrencyCell = (cell) => {
+        if (typeof cell.value === 'number') {
+          cell.numFmt = '[$$-es-CL] #,##0'
+        }
+      }
+
+      const quantityAlignment = { vertical: 'middle', horizontal: 'center' }
+      const textAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true }
+      const currencyAlignment = { vertical: 'middle', horizontal: 'right' }
+
+      const baseColumnCount = baseColumns.length
+      const firstProductColumnIndex = baseColumnCount + 1
+      const amountColumnIndex = baseColumnCount + productColumns.length + 1
+
+      const productTotals = new Map()
+      productColumns.forEach((column) => {
+        productTotals.set(column.key, 0)
+      })
+
+      let dataRowIndex = 0
+
+      filteredClients.forEach((entry) => {
+        const { client, products, totalAmount } = entry
+        if (!Array.isArray(products) || products.length === 0) {
+          return
+        }
+
+        const formattedPhone = formatChileanPhone(client.telefono) || client.telefono || ''
+
+        const perClientQuantities = new Map()
+        products.forEach((item) => {
+          const unitLabel = formatUnitLabelForExport(item.product.unit)
+          const productKey = `${item.product.id ?? item.product.name}__${unitLabel}`
+          const previous = perClientQuantities.get(productKey) || 0
+          const quantityNumber = Number(item.quantity) || 0
+          perClientQuantities.set(productKey, previous + quantityNumber)
+        })
+
+        const rowValues = [
+          client.nombreCompleto,
+          formattedPhone,
+          client.direccion || '',
+          client.comuna || '',
+        ]
+
+        const productCells = productColumns.map((column) => {
+          const quantity = perClientQuantities.get(column.key) || 0
+          if (quantity) {
+            productTotals.set(column.key, (productTotals.get(column.key) || 0) + quantity)
+            return quantity
+          }
+          return ''
+        })
+
+        rowValues.push(...productCells)
+
+        const clientTotalValue = Number(totalAmount) || 0
+        rowValues.push(clientTotalValue, '', '')
+
+        const row = worksheet.addRow(rowValues)
+
+        dataRowIndex += 1
+
+        row.eachCell((cell, cellNumber) => {
+          if (cellNumber >= firstProductColumnIndex && cellNumber < amountColumnIndex) {
+            cell.alignment = quantityAlignment
+            if (typeof cell.value === 'number') {
+              cell.numFmt = '#,##0'
+            }
+          } else if (cellNumber === amountColumnIndex) {
+            cell.alignment = currencyAlignment
+            formatCurrencyCell(cell)
+          } else {
+            cell.alignment = textAlignment
+          }
+        })
+
+        if (dataRowIndex % 2 === 0) {
+          row.eachCell((cell) => {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFF3F4F6' },
+            }
+          })
+        }
+
+        addBorders(row)
+      })
+
+      const totalRowValues = [
+        'Total',
+        '',
+        '',
+        '',
+        ...productColumns.map((column) => {
+          const sum = productTotals.get(column.key) || 0
+          return sum ? sum : ''
+        }),
+        grandTotalAmount,
+        '',
+        '',
+      ]
+
+      const totalRow = worksheet.addRow(totalRowValues)
+
+      totalRow.eachCell((cell, cellNumber) => {
+        cell.font = { bold: true }
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE0F2FE' },
+        }
+
+        if (cellNumber >= firstProductColumnIndex && cellNumber < amountColumnIndex) {
+          cell.alignment = quantityAlignment
+          if (typeof cell.value === 'number') {
+            cell.numFmt = '#,##0'
+          }
+        } else if (cellNumber === amountColumnIndex) {
+          cell.alignment = currencyAlignment
+          formatCurrencyCell(cell)
+        } else {
+          cell.alignment = textAlignment
+        }
+      })
+
+      addBorders(totalRow)
+
+      const buffer = await workbook.xlsx.writeBuffer()
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      })
+
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `clientes-pendientes-${new Date().toISOString().slice(0, 10)}.xlsx`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error al generar el Excel de clientes pendientes:', error)
     }
-
-    const csvLines = [headers.map(escapeCell).join(';')]
-    rows.forEach((row) => {
-      csvLines.push(row.map(escapeCell).join(';'))
-    })
-
-    const csvContent = `\ufeff${csvLines.join('\r\n')}`
-
-    const blob = new Blob([csvContent], {
-      type: 'text/csv;charset=utf-8;',
-    })
-
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `clientes-pendientes-${new Date().toISOString().slice(0, 10)}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
   }
 
   return (
@@ -348,6 +605,7 @@ const PendingClientsPanel = ({
                 const orderIds = Array.isArray(entry.orderIds) ? entry.orderIds : []
                 const rowDisabled =
                   isUpdating || processingClientId === entry.client.id || orderIds.length === 0
+                const formattedPhone = formatChileanPhone(entry.client.telefono)
 
                 return (
                   <tr key={entry.client.id}>
@@ -358,7 +616,7 @@ const PendingClientsPanel = ({
                       </div>
                     </td>
                     <td>
-                      <div>{entry.client.telefono}</div>
+                      <div>{formattedPhone || entry.client.telefono || '—'}</div>
                       {entry.client.diaReparto && (
                         <div className="pending-client-day">Entrega: {entry.client.diaReparto}</div>
                       )}

@@ -14,6 +14,25 @@ const createInitialForm = () => ({
   date: new Date().toISOString().slice(0, 10),
 })
 
+const toLocalMidnightIso = (dateString) => {
+  if (!dateString) {
+    return null
+  }
+
+  const [year, month, day] = dateString.split('-')
+  if (!year || !month || !day) {
+    return null
+  }
+
+  const offsetMinutes = new Date().getTimezoneOffset()
+  const absolute = Math.abs(offsetMinutes)
+  const sign = offsetMinutes > 0 ? '-' : '+'
+  const hours = String(Math.floor(absolute / 60)).padStart(2, '0')
+  const minutes = String(absolute % 60).padStart(2, '0')
+
+  return `${year}-${month}-${day}T00:00:00${sign}${hours}:${minutes}`
+}
+
 const CashflowEntryForm = ({ onSubmit, submitting }) => {
   const [form, setForm] = useState(() => createInitialForm())
   const [error, setError] = useState(null)
@@ -38,12 +57,14 @@ const CashflowEntryForm = ({ onSubmit, submitting }) => {
     }
 
     setError(null)
+    const normalizedDate = toLocalMidnightIso(form.date)
+
     const payload = {
       type: form.type,
       amount: parsedAmount,
       category: form.category.trim(),
       description: form.description.trim(),
-      date: form.date,
+      date: normalizedDate,
     }
 
     onSubmit?.(payload, () => setForm(createInitialForm()))

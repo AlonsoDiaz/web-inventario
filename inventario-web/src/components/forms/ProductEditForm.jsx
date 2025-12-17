@@ -11,6 +11,7 @@ const UNIT_OPTIONS = [
   'Unidad',
   'Docena',
   'Caja',
+  'Bandeja',
   'Kilogramo',
   'Gramo',
   'Litro',

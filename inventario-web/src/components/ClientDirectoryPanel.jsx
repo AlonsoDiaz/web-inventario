@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { formatChileanPhone } from '../utils/phoneInput'
+
 const normalizeText = (value) => {
   if (value == null) {
     return ''
@@ -115,7 +117,7 @@ const ClientDirectoryPanel = ({ clients = [], pendingSummary = new Map(), search
                 <tr key={row.id}>
                   <td>{row.nombreCompleto}</td>
                   <td>
-                    <div>{row.telefono || '—'}</div>
+                    <div>{formatChileanPhone(row.telefono) || '—'}</div>
                   </td>
                   <td>{row.direccion || '—'}</td>
                   <td>{row.comuna || '—'}</td>

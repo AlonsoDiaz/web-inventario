@@ -1,26 +1,42 @@
 import { useState } from 'react'
 
-const initialState = {
+import { formatChileanPhone, parseChileanPhoneValue } from '../../utils/phoneInput'
+
+const createInitialState = () => ({
   nombreCompleto: '',
   telefono: '',
+  telefonoHasCountryCode: false,
   direccion: '',
   comuna: '',
   diaReparto: '',
-}
+})
 
 const DEFAULT_DIAS_REPARTO = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
 const ClientForm = ({ comunas = [], diasReparto = [], onSubmit, submitting }) => {
-  const [form, setForm] = useState(initialState)
+  const [form, setForm] = useState(() => createInitialState())
   const optionsDias = diasReparto.length ? diasReparto : DEFAULT_DIAS_REPARTO
 
   const updateField = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }))
+    let { value } = event.target
+    if (field === 'telefono') {
+      const { digits, hasCountryCode } = parseChileanPhoneValue(value)
+      setForm((prev) => ({ ...prev, telefono: digits, telefonoHasCountryCode: hasCountryCode }))
+      return
+    }
+    setForm((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    onSubmit?.(form, () => setForm(initialState))
+    const { telefono, telefonoHasCountryCode, ...rest } = form
+    const payload = {
+      ...rest,
+      telefono: formatChileanPhone(telefono, {
+        includeCountryCode: telefonoHasCountryCode,
+      }),
+    }
+    onSubmit?.(payload, () => setForm(createInitialState()))
   }
 
   return (
@@ -39,10 +55,14 @@ const ClientForm = ({ comunas = [], diasReparto = [], onSubmit, submitting }) =>
         <span>Teléfono</span>
         <input
           type="tel"
+          inputMode="numeric"
           required
-          value={form.telefono}
+          value={formatChileanPhone(form.telefono, {
+            includeCountryCode: form.telefonoHasCountryCode,
+          })}
           onChange={updateField('telefono')}
-          placeholder="959000000"
+          placeholder="X XXXX XXXX"
+          maxLength={16}
         />
       </label>
       <label>

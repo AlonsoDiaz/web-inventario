@@ -20,6 +20,7 @@ import PendingClientsPanel from './components/PendingClientsPanel.jsx'
 import ClientDirectoryPanel from './components/ClientDirectoryPanel.jsx'
 import CashflowPanel from './components/CashflowPanel.jsx'
 import CashflowEntryForm from './components/forms/CashflowEntryForm.jsx'
+import ClientInsightModal from './components/ClientInsightModal.jsx'
 import { api } from './services/api.js'
 
 const DELIVERY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -264,6 +265,9 @@ function App() {
         break
       case 'view-summary':
         setSummaryVisible((prev) => !prev)
+        break
+      case 'view-client':
+        setModal('view-client')
         break
       case 'view-pending-clients':
         handlePendingClientsRefresh()
@@ -757,17 +761,28 @@ function App() {
         </Modal>
       )}
 
-        {modal === 'cashflow-entry' && (
-          <Modal title="Registrar ingreso/egreso" onClose={closeModal}>
-            <CashflowEntryForm onSubmit={handleCashflowSubmit} submitting={actionLoading} />
-          </Modal>
-        )}
+      {modal === 'view-client' && (
+        <Modal title="Historial del cliente" onClose={closeModal}>
+          <ClientInsightModal
+            clients={clients}
+            orders={orders}
+            products={dashboard.products || []}
+            pricing={dashboard.pricing}
+          />
+        </Modal>
+      )}
 
-        {modal === 'activity-feed' && (
-          <Modal title="Actividad reciente" onClose={closeModal}>
-            <ActivityFeed activities={dashboard.activities} variant="modal" />
-          </Modal>
-        )}
+      {modal === 'cashflow-entry' && (
+        <Modal title="Registrar ingreso/egreso" onClose={closeModal}>
+          <CashflowEntryForm onSubmit={handleCashflowSubmit} submitting={actionLoading} />
+        </Modal>
+      )}
+
+      {modal === 'activity-feed' && (
+        <Modal title="Actividad reciente" onClose={closeModal}>
+          <ActivityFeed activities={dashboard.activities} variant="modal" />
+        </Modal>
+      )}
 
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>

@@ -21,6 +21,8 @@ const formatCurrency = (value) => {
   }).format(amount)
 }
 
+const CHILE_TIMEZONE = 'America/Santiago'
+
 const formatDateTime = (value) => {
   if (!value) {
     return 'Sin fecha'
@@ -29,9 +31,9 @@ const formatDateTime = (value) => {
   if (Number.isNaN(date.getTime())) {
     return 'Sin fecha'
   }
-  return date.toLocaleString('es-CL', {
+  return date.toLocaleDateString('es-CL', {
     dateStyle: 'medium',
-    timeStyle: 'short',
+    timeZone: CHILE_TIMEZONE,
   })
 }
 
@@ -42,14 +44,38 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry }) => {
   const normalizedSearch = useMemo(() => normalizeText(searchTerm), [searchTerm])
 
   const filteredTransactions = useMemo(() => {
-    if (!normalizedSearch) {
-      return transactions
+    const toTimestamp = (value) => {
+      if (!value) {
+        return Number.NEGATIVE_INFINITY
+      }
+      const date = new Date(value)
+      const time = date.getTime()
+      return Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY
     }
-    return transactions.filter((entry) => {
-      const haystack = normalizeText(
-        `${entry.type || ''} ${entry.category || ''} ${entry.description || ''}`,
-      )
-      return haystack.includes(normalizedSearch)
+
+    const matches = normalizedSearch
+      ? transactions.filter((entry) => {
+          const haystack = normalizeText(
+            `${entry.type || ''} ${entry.category || ''} ${entry.description || ''}`,
+          )
+          return haystack.includes(normalizedSearch)
+        })
+      : transactions
+
+    return [...matches].sort((a, b) => {
+      const dateA = toTimestamp(a.date)
+      const dateB = toTimestamp(b.date)
+      if (dateA !== dateB) {
+        return dateB - dateA
+      }
+
+      const createdA = toTimestamp(a.createdAt)
+      const createdB = toTimestamp(b.createdAt)
+      if (createdA !== createdB) {
+        return createdB - createdA
+      }
+
+      return 0
     })
   }, [transactions, normalizedSearch])
 

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { formatChileanPhone, parseChileanPhoneValue } from '../../utils/phoneInput'
+
 const DEFAULT_DIAS_REPARTO = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
 const toFormState = (client) => {
@@ -7,15 +9,18 @@ const toFormState = (client) => {
     return {
       nombreCompleto: '',
       telefono: '',
+      telefonoHasCountryCode: false,
       direccion: '',
       comuna: '',
       diaReparto: '',
     }
   }
 
+  const { digits, hasCountryCode } = parseChileanPhoneValue(client.telefono)
   return {
     nombreCompleto: client.nombreCompleto ?? '',
-    telefono: client.telefono ?? '',
+    telefono: digits,
+    telefonoHasCountryCode: hasCountryCode,
     direccion: client.direccion ?? '',
     comuna: client.comuna ?? '',
     diaReparto: client.diaReparto ?? '',
@@ -50,7 +55,17 @@ const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit
   }, [selectedClient?.id])
 
   const updateField = (field) => (event) => {
-    setForm((prev) => ({ ...prev, [field]: event.target.value }))
+    let { value } = event.target
+    if (field === 'telefono') {
+      const { digits, hasCountryCode } = parseChileanPhoneValue(value)
+      setForm((prev) => ({
+        ...prev,
+        telefono: digits,
+        telefonoHasCountryCode: hasCountryCode,
+      }))
+      return
+    }
+    setForm((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSubmit = (event) => {
@@ -59,14 +74,15 @@ const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit
       return
     }
 
+    const { telefono, telefonoHasCountryCode, ...rest } = form
+
     onSubmit?.({
       clientId: selectedClient.id,
       updates: {
-        nombreCompleto: form.nombreCompleto,
-        telefono: form.telefono,
-        direccion: form.direccion,
-        comuna: form.comuna,
-        diaReparto: form.diaReparto,
+        ...rest,
+        telefono: formatChileanPhone(telefono, {
+          includeCountryCode: telefonoHasCountryCode,
+        }),
       },
     })
   }
@@ -96,7 +112,17 @@ const ClientEditForm = ({ clients = [], comunas = [], diasReparto = [], onSubmit
           </label>
           <label>
             <span>Teléfono</span>
-            <input type="tel" required value={form.telefono} onChange={updateField('telefono')} />
+            <input
+              type="tel"
+              inputMode="numeric"
+              required
+              value={formatChileanPhone(form.telefono, {
+                includeCountryCode: form.telefonoHasCountryCode,
+              })}
+              onChange={updateField('telefono')}
+              placeholder="X XXXX XXXX"
+              maxLength={16}
+            />
           </label>
           <label>
             <span>Dirección</span>

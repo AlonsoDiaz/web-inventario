@@ -447,6 +447,7 @@ app.post('/api/orders', async (req, res) => {
     clienteId,
     estado: 'pendiente',
     createdAt: toISO(),
+    deliveredAt: null,
     items: normalizedItems,
   }
 
@@ -646,6 +647,7 @@ app.post('/api/orders/mark-delivered', async (req, res) => {
       }
 
       order.estado = 'completado'
+      order.deliveredAt = toISO()
       updatedOrders.push(orderId)
 
       const client = draft.clients.find((c) => c.id === order.clienteId)

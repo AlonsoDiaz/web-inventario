@@ -1,4 +1,19 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'
+const resolveApiBaseUrl = () => {
+  const explicitUrl = import.meta.env.VITE_API_URL
+  if (explicitUrl) {
+    return explicitUrl.replace(/\/$/, '')
+  }
+
+  if (typeof window !== 'undefined') {
+    const { protocol, hostname } = window.location
+    const port = import.meta.env.VITE_API_PORT || 4000
+    return `${protocol}//${hostname}:${port}`.replace(/\/$/, '')
+  }
+
+  return 'http://localhost:4000'
+}
+
+const API_BASE_URL = resolveApiBaseUrl()
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
