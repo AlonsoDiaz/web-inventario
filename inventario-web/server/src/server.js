@@ -151,17 +151,41 @@ function computeMetrics(data) {
   }
 }
 
+const normalizePaymentMethod = (method) => {
+  if (typeof method !== 'string') {
+    return 'otro'
+  }
+  const value = method.trim().toLowerCase()
+  if (value === 'efectivo' || value === 'transferencia') {
+    return value
+  }
+  return 'otro'
+}
+
 function computeCashflowSummary(transactions = []) {
   return transactions.reduce(
     (acc, item) => {
+      const amount = Number(item.amount || 0)
+      const method = normalizePaymentMethod(item.paymentMethod)
+
       if (item.type === 'ingreso') {
-        acc.totalIncome += item.amount || 0
+        acc.totalIncome += amount
+        if (method === 'efectivo') {
+          acc.cash += amount
+        } else if (method === 'transferencia') {
+          acc.bank += amount
+        }
       } else if (item.type === 'egreso') {
-        acc.totalExpense += item.amount || 0
+        acc.totalExpense += amount
+        if (method === 'efectivo') {
+          acc.cash -= amount
+        } else if (method === 'transferencia') {
+          acc.bank -= amount
+        }
       }
       return acc
     },
-    { totalIncome: 0, totalExpense: 0 },
+    { totalIncome: 0, totalExpense: 0, cash: 0, bank: 0 },
   )
 }
 
@@ -785,13 +809,15 @@ app.get('/api/cashflow', async (_req, res) => {
       totalIncome: summary.totalIncome,
       totalExpense: summary.totalExpense,
       balance: summary.totalIncome - summary.totalExpense,
+      cash: summary.cash,
+      bank: summary.bank,
     },
   }
   res.json(response)
 })
 
 app.post('/api/cashflow', async (req, res) => {
-  const { type, amount, category, description, date } = req.body || {}
+  const { type, amount, category, description, date, paymentMethod } = req.body || {}
 
   const normalizedType = type === 'egreso' ? 'egreso' : 'ingreso'
   const parsedAmount = Number(amount)
@@ -809,6 +835,7 @@ app.post('/api/cashflow', async (req, res) => {
 
   const entryDate = parsedDate ? parsedDate.toISOString() : toISO()
   const now = toISO()
+  const normalizedMethod = normalizePaymentMethod(paymentMethod)
 
   const data = await mutateData((draft) => {
     if (!Array.isArray(draft.cashflow)) {
@@ -823,6 +850,7 @@ app.post('/api/cashflow', async (req, res) => {
       description: typeof description === 'string' ? description.trim() : '',
       date: entryDate,
       createdAt: now,
+      paymentMethod: normalizedMethod,
     }
 
     draft.cashflow.push(entry)
@@ -844,6 +872,8 @@ app.post('/api/cashflow', async (req, res) => {
       totalIncome: summary.totalIncome,
       totalExpense: summary.totalExpense,
       balance: summary.totalIncome - summary.totalExpense,
+      cash: summary.cash,
+      bank: summary.bank,
     },
   })
 })
@@ -1335,6 +1365,7 @@ app.get('/api/debts', async (_req, res) => {
 
 app.post('/api/debts/:id/pay', async (req, res, next) => {
   const { id } = req.params
+  const { paymentMethod } = req.body || {}
 
   try {
     let updatedDebt = null
@@ -1358,6 +1389,7 @@ app.post('/api/debts/:id/pay', async (req, res, next) => {
 
       const now = toISO()
       const amount = Number(debt.amount) || 0
+      const method = normalizePaymentMethod(paymentMethod)
 
       clientForResponse = draft.clients.find((client) => client.id === debt.clientId) || null
       const clientName = clientForResponse?.nombreCompleto || 'Cliente'
@@ -1371,6 +1403,7 @@ app.post('/api/debts/:id/pay', async (req, res, next) => {
         description: `Pago deuda ${clientName}`,
         date: now,
         createdAt: now,
+        paymentMethod: method,
       }
       cashflow.push(cashflowEntry)
 
@@ -1421,6 +1454,8 @@ app.post('/api/debts/:id/pay', async (req, res, next) => {
         totalIncome: summary.totalIncome,
         totalExpense: summary.totalExpense,
         balance: summary.totalIncome - summary.totalExpense,
+        cash: summary.cash,
+        bank: summary.bank,
       },
     })
   } catch (error) {

@@ -241,38 +241,6 @@ const PendingClientsPanel = ({
     }
 
     try {
-      // Prepara catálogo de productos para columnas dinámicas.
-      const productDefinitionMap = new Map()
-      filteredClients.forEach((entry) => {
-        if (!Array.isArray(entry.products)) {
-          return
-        }
-
-        entry.products.forEach((item) => {
-          const unitLabel = formatUnitLabelForExport(item.product.unit)
-          const productKey = `${item.product.id ?? item.product.name}__${unitLabel}`
-          const quantityNumber = Number(item.quantity) || 0
-          const unitPriceNumber = Number(item.product.unitPrice) || 0
-
-          if (!productDefinitionMap.has(productKey)) {
-            productDefinitionMap.set(productKey, {
-              key: productKey,
-              name: item.product.name,
-              unitLabel,
-              header:
-                unitLabel && unitLabel.length
-                  ? `${item.product.name} (${unitLabel})`
-                  : item.product.name,
-              unitPrice: unitPriceNumber,
-            })
-          }
-
-          const definition = productDefinitionMap.get(productKey)
-          definition.totalQuantity = (definition.totalQuantity || 0) + quantityNumber
-          definition.totalSubtotal = (definition.totalSubtotal || 0) + unitPriceNumber * quantityNumber
-        })
-      })
-
       const grandTotalAmount = filteredClients.reduce(
         (sum, entry) => sum + (Number(entry.totalAmount) || 0),
         0,
@@ -300,10 +268,6 @@ const PendingClientsPanel = ({
         },
       })
 
-      const productColumns = Array.from(productDefinitionMap.values()).sort((a, b) =>
-        collator.compare(a.header, b.header),
-      )
-
       const baseColumns = [
         { header: 'Nombre completo', key: 'cliente', width: 28 },
         { header: 'Teléfono', key: 'telefono', width: 16 },
@@ -311,11 +275,7 @@ const PendingClientsPanel = ({
         { header: 'Comuna', key: 'comuna', width: 18 },
       ]
 
-      const productExcelColumns = productColumns.map((column) => ({
-        header: column.header,
-        key: column.key,
-        width: 20,
-      }))
+      const productSummaryColumn = { header: 'Productos pendientes', key: 'productos', width: 42 }
 
       const tailColumns = [
         { header: 'Monto a pagar', key: 'totalCliente', width: 16 },
@@ -323,7 +283,7 @@ const PendingClientsPanel = ({
         { header: 'Método de pago', key: 'metodoPago', width: 18 },
       ]
 
-      const columns = [...baseColumns, ...productExcelColumns, ...tailColumns]
+      const columns = [...baseColumns, productSummaryColumn, ...tailColumns]
 
       worksheet.columns = columns
 
@@ -366,18 +326,11 @@ const PendingClientsPanel = ({
         }
       }
 
-      const quantityAlignment = { vertical: 'middle', horizontal: 'center' }
       const textAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true }
       const currencyAlignment = { vertical: 'middle', horizontal: 'right' }
 
       const baseColumnCount = baseColumns.length
-      const firstProductColumnIndex = baseColumnCount + 1
-      const amountColumnIndex = baseColumnCount + productColumns.length + 1
-
-      const productTotals = new Map()
-      productColumns.forEach((column) => {
-        productTotals.set(column.key, 0)
-      })
+      const amountColumnIndex = baseColumnCount + 2
 
       let dataRowIndex = 0
 
@@ -393,43 +346,39 @@ const PendingClientsPanel = ({
         products.forEach((item) => {
           const unitLabel = formatUnitLabelForExport(item.product.unit)
           const productKey = `${item.product.id ?? item.product.name}__${unitLabel}`
-          const previous = perClientQuantities.get(productKey) || 0
+          const label = unitLabel && unitLabel.length ? `${item.product.name} (${unitLabel})` : item.product.name
+          const previous = perClientQuantities.get(productKey) || { label, quantity: 0 }
           const quantityNumber = Number(item.quantity) || 0
-          perClientQuantities.set(productKey, previous + quantityNumber)
+          perClientQuantities.set(productKey, {
+            label,
+            quantity: previous.quantity + quantityNumber,
+          })
         })
+
+        const productSummary = Array.from(perClientQuantities.values())
+          .sort((a, b) => collator.compare(a.label, b.label))
+          .map((item) => `${item.label}: ${new Intl.NumberFormat('es-CL').format(item.quantity)}`)
+          .join('\n')
+
+        const clientTotalValue = Number(totalAmount) || 0
 
         const rowValues = [
           client.nombreCompleto,
           formattedPhone,
           client.direccion || '',
           client.comuna || '',
+          productSummary,
+          clientTotalValue,
+          '',
+          '',
         ]
-
-        const productCells = productColumns.map((column) => {
-          const quantity = perClientQuantities.get(column.key) || 0
-          if (quantity) {
-            productTotals.set(column.key, (productTotals.get(column.key) || 0) + quantity)
-            return quantity
-          }
-          return ''
-        })
-
-        rowValues.push(...productCells)
-
-        const clientTotalValue = Number(totalAmount) || 0
-        rowValues.push(clientTotalValue, '', '')
 
         const row = worksheet.addRow(rowValues)
 
         dataRowIndex += 1
 
         row.eachCell((cell, cellNumber) => {
-          if (cellNumber >= firstProductColumnIndex && cellNumber < amountColumnIndex) {
-            cell.alignment = quantityAlignment
-            if (typeof cell.value === 'number') {
-              cell.numFmt = '#,##0'
-            }
-          } else if (cellNumber === amountColumnIndex) {
+          if (cellNumber === amountColumnIndex) {
             cell.alignment = currencyAlignment
             formatCurrencyCell(cell)
           } else {
@@ -455,10 +404,7 @@ const PendingClientsPanel = ({
         '',
         '',
         '',
-        ...productColumns.map((column) => {
-          const sum = productTotals.get(column.key) || 0
-          return sum ? sum : ''
-        }),
+        '',
         grandTotalAmount,
         '',
         '',
@@ -474,12 +420,7 @@ const PendingClientsPanel = ({
           fgColor: { argb: 'FFE0F2FE' },
         }
 
-        if (cellNumber >= firstProductColumnIndex && cellNumber < amountColumnIndex) {
-          cell.alignment = quantityAlignment
-          if (typeof cell.value === 'number') {
-            cell.numFmt = '#,##0'
-          }
-        } else if (cellNumber === amountColumnIndex) {
+        if (cellNumber === amountColumnIndex) {
           cell.alignment = currencyAlignment
           formatCurrencyCell(cell)
         } else {

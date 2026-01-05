@@ -2023,6 +2023,30 @@ tbody tr[data-selected='true'] {
     gap: 0.9rem;
   }
 
+  /* Unificar color para ambos botones del diálogo de método de pago */
+  .confirm-dialog .chip-button,
+  .confirm-dialog .confirm-button,
+  .confirm-dialog .confirm-button-primary,
+  .confirm-dialog .confirm-button-success,
+  .confirm-dialog .confirm-button-danger {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 12px 22px rgba(31, 111, 235, 0.22);
+  }
+
+  .confirm-dialog .chip-button:hover,
+  .confirm-dialog .confirm-button:hover:not(:disabled),
+  .confirm-dialog .confirm-button-primary:hover:not(:disabled),
+  .confirm-dialog .confirm-button-success:hover:not(:disabled),
+  .confirm-dialog .confirm-button-danger:hover:not(:disabled) {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 28px rgba(15, 75, 184, 0.26);
+  }
+
   .confirm-button {
     padding: 0.75rem 1.6rem;
     border-radius: 999px;

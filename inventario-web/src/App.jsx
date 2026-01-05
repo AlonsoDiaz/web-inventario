@@ -68,6 +68,8 @@ const normalizeCashflow = (data = {}) => {
       totalIncome: summary.totalIncome || 0,
       totalExpense: summary.totalExpense || 0,
       balance: summary.balance || 0,
+      cash: summary.cash || 0,
+      bank: summary.bank || 0,
     },
     generatedAt: data.generatedAt || null,
   }
@@ -100,7 +102,6 @@ function App() {
   const [actionLoading, setActionLoading] = useState(false)
   const [toast, setToast] = useState(null)
   const [report, setReport] = useState(null)
-  
   const [pendingClientsData, setPendingClientsData] = useState(null)
   const [pendingClientsLoading, setPendingClientsLoading] = useState(false)
   const [pendingClientsSubmitting, setPendingClientsSubmitting] = useState(false)
@@ -138,6 +139,24 @@ function App() {
       confirmResolveRef.current = null
     }
     setConfirmDialog(null)
+  }
+
+  const paymentMethodPrompt = async () => {
+    const result = await openConfirmDialog({
+      title: 'Selecciona método de pago',
+      message: 'Registra si el pago fue en efectivo o transferencia.',
+      confirmLabel: 'Efectivo',
+      cancelLabel: 'Transferencia',
+      tone: 'primary',
+      accentIcon: '💳',
+    })
+    if (result === true) {
+      return 'efectivo'
+    }
+    if (result === false) {
+      return 'transferencia'
+    }
+    return null
   }
 
   const pendingSummaryMap = useMemo(() => {
@@ -701,18 +720,24 @@ function App() {
       let cashflowError = null
 
       if (deliveredAmount > 0) {
-        try {
-          await api.createCashflowEntry({
-            type: 'ingreso',
-            amount: deliveredAmount,
-            category: 'Ventas',
-            description: clientName ? `Entrega a ${clientName}` : 'Entrega registrada',
-          })
-          saleRegistered = true
-          await fetchCashflow().catch(() => null)
-        } catch (err) {
-          cashflowError = err
-          console.error(err)
+        const method = await paymentMethodPrompt()
+        if (!method) {
+          showToast('Selecciona método: efectivo o transferencia')
+        } else {
+          try {
+            await api.createCashflowEntry({
+              type: 'ingreso',
+              amount: deliveredAmount,
+              category: 'Ventas',
+              description: clientName ? `Entrega a ${clientName}` : 'Entrega registrada',
+              paymentMethod: method,
+            })
+            saleRegistered = true
+            await fetchCashflow().catch(() => null)
+          } catch (err) {
+            cashflowError = err
+            console.error(err)
+          }
         }
       }
 
@@ -838,10 +863,16 @@ function App() {
       return
     }
 
+    const method = await paymentMethodPrompt()
+    if (!method) {
+      showToast('Selecciona método: efectivo o transferencia')
+      return
+    }
+
     try {
       setDebtsLoading(true)
       setError(null)
-      await api.payDebt(debt.id)
+      await api.payDebt(debt.id, { paymentMethod: method })
       showToast(clientName ? `Pago registrado: ${clientName}` : 'Pago registrado')
       await Promise.all([
         refreshDashboard(),

@@ -22,6 +22,12 @@ const formatCurrency = (value) => {
   }).format(amount)
 }
 
+const formatMethod = (value) => {
+  if (value === 'efectivo') return 'Efectivo'
+  if (value === 'transferencia') return 'Transferencia'
+  return 'Otro'
+}
+
 const CHILE_TIMEZONE = 'America/Santiago'
 
 const formatDateTime = (value) => {
@@ -85,7 +91,10 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
     { key: 'type', label: 'Tipo' },
     { key: 'category', label: 'Categoría' },
     { key: 'description', label: 'Descripción' },
+    { key: 'method', label: 'Método' },
     { key: 'amount', label: 'Monto' },
+    { key: 'cash', label: 'Efectivo' },
+    { key: 'transfer', label: 'Transferencia' },
   ]
 
   const exportRows = filteredTransactions.map((entry) => ({
@@ -93,7 +102,10 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
     type: entry.type === 'ingreso' ? 'Ingreso' : 'Egreso',
     category: entry.category || 'Sin categoría',
     description: entry.description || '—',
+    method: formatMethod(entry.paymentMethod),
     amount: Number(entry.amount || 0),
+    cash: entry.paymentMethod === 'efectivo' ? Number(entry.amount || 0) : 0,
+    transfer: entry.paymentMethod === 'transferencia' ? Number(entry.amount || 0) : 0,
   }))
 
   const handleExportExcel = () => {
@@ -149,6 +161,7 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
                 <th>Tipo</th>
                 <th>Categoría</th>
                 <th>Descripción</th>
+                <th>Método</th>
                 <th className="cashflow-amount">Monto</th>
                 <th className="cashflow-actions">Acción</th>
               </tr>
@@ -168,6 +181,7 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
                   </td>
                   <td>{entry.category || 'Sin categoría'}</td>
                   <td>{entry.description || '—'}</td>
+                  <td>{formatMethod(entry.paymentMethod)}</td>
                   <td className={`cashflow-amount ${entry.type === 'ingreso' ? 'is-income' : 'is-expense'}`}>
                     {entry.type === 'ingreso' ? '+' : '-'}
                     {formatCurrency(entry.amount)}

@@ -15,6 +15,70 @@
       "category": "General",
       "notes": "",
       "unit": "Malla"
+    },
+    {
+      "id": "prod-manzanas-001",
+      "name": "Manzanas",
+      "unitPrice": 2500,
+      "category": "Frutas",
+      "notes": "Caja 10 kg",
+      "unit": "Caja"
+    },
+    {
+      "id": "prod-naranjas-002",
+      "name": "Naranjas",
+      "unitPrice": 1800,
+      "category": "Frutas",
+      "notes": "Saco 8 kg",
+      "unit": "Saco"
+    },
+    {
+      "id": "prod-bananas-003",
+      "name": "Bananas",
+      "unitPrice": 1500,
+      "category": "Frutas",
+      "notes": "Mano 1.5 kg",
+      "unit": "Mano"
+    },
+    {
+      "id": "prod-leche-004",
+      "name": "Leche entera",
+      "unitPrice": 1200,
+      "category": "Lácteos",
+      "notes": "Caja 12u",
+      "unit": "Caja"
+    },
+    {
+      "id": "prod-pan-005",
+      "name": "Pan molde",
+      "unitPrice": 1800,
+      "category": "Panadería",
+      "notes": "Bolsa",
+      "unit": "Bolsa"
+    },
+    {
+      "id": "prod-huevo-006",
+      "name": "Huevos camperos",
+      "unitPrice": 3200,
+      "category": "Abarrotes",
+      "notes": "Maple 30u",
+      "unit": "Maple"
+    },
+    {
+      "id": "prod-queso-007",
+      "name": "Queso mantecoso",
+      "unitPrice": 5200,
+      "category": "Lácteos",
+      "notes": "Cuña 1 kg",
+      "unit": "Kg"
+    },
+    {
+      "id": "prod-arroz-008",
+      "name": "Arroz grano largo",
+      "unitPrice": 1100,
+      "category": "Abarrotes",
+      "notes": "Bolsa 1 kg",
+      "unit": "Bolsa"
     }
   ],
   "clients": [
@@ -25,6 +89,78 @@
       "direccion": "ffff",
       "comuna": "Puente Alto",
       "diaReparto": "Lunes"
+    },
+    {
+      "id": "cli-maria-001",
+      "nombreCompleto": "María Pérez",
+      "telefono": "+56 9 8765 4321",
+      "direccion": "Los Olivos 123",
+      "comuna": "La Florida",
+      "diaReparto": "Martes"
+    },
+    {
+      "id": "cli-carlos-002",
+      "nombreCompleto": "Carlos Soto",
+      "telefono": "+56 9 5555 1212",
+      "direccion": "Av. Central 456",
+      "comuna": "Ñuñoa",
+      "diaReparto": "Jueves"
+    },
+    {
+      "id": "cli-ana-003",
+      "nombreCompleto": "Ana Rivas",
+      "telefono": "+56 9 9988 7766",
+      "direccion": "Pasaje Las Flores 89",
+      "comuna": "Maipú",
+      "diaReparto": "Viernes"
+    },
+    {
+      "id": "cli-luis-004",
+      "nombreCompleto": "Luis Herrera",
+      "telefono": "+56 9 4433 2211",
+      "direccion": "Camino El Alba 1200",
+      "comuna": "Las Condes",
+      "diaReparto": "Miércoles"
+    },
+    {
+      "id": "cli-sofia-005",
+      "nombreCompleto": "Sofía Díaz",
+      "telefono": "+56 9 1212 3434",
+      "direccion": "Av. Grecia 1500",
+      "comuna": "Peñalolén",
+      "diaReparto": "Lunes"
+    },
+    {
+      "id": "cli-jorge-006",
+      "nombreCompleto": "Jorge Fuentes",
+      "telefono": "+56 9 7878 9090",
+      "direccion": "Calle Sur 55",
+      "comuna": "San Miguel",
+      "diaReparto": "Martes"
+    },
+    {
+      "id": "cli-vale-007",
+      "nombreCompleto": "Valentina Araya",
+      "telefono": "+56 9 2222 3344",
+      "direccion": "El Tranque 345",
+      "comuna": "Lo Barnechea",
+      "diaReparto": "Jueves"
+    },
+    {
+      "id": "cli-roberto-008",
+      "nombreCompleto": "Roberto Mella",
+      "telefono": "+56 9 6666 5555",
+      "direccion": "Av. Portales 890",
+      "comuna": "Santiago Centro",
+      "diaReparto": "Viernes"
+    },
+    {
+      "id": "cli-andrea-009",
+      "nombreCompleto": "Andrea Campos",
+      "telefono": "+56 9 3333 7878",
+      "direccion": "Calle Larga 12",
+      "comuna": "Providencia",
+      "diaReparto": "Miércoles"
     }
   ],
   "orders": [
@@ -83,6 +219,285 @@
         }
       ],
       "updatedAt": "2026-01-05T13:37:31.308Z"
+    },
+    {
+      "id": "0BnCUZ5lcyxBzkYaHC3mQ",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T14:59:38.150Z",
+      "deliveredAt": "2026-01-05T14:59:59.329Z",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 1,
+          "lineId": "niy83iFJTEJ4GBlD1IXkt",
+          "status": "entregado"
+        },
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "cantidad": 1,
+          "lineId": "FPkwan4LRYPitbRoOhBEC",
+          "status": "entregado"
+        }
+      ],
+      "debtId": "s0yoyeraB5BNG8rF9vaoA",
+      "updatedAt": "2026-01-05T15:00:27.918Z"
+    },
+    {
+      "id": "Dpaa2_WP9d3w3qLO-11dc",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T15:06:54.497Z",
+      "deliveredAt": "2026-01-05T15:06:58.140Z",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 1,
+          "lineId": "XHMx6QC1QbySCEaDhNZ1U",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T15:06:58.140Z"
+    },
+    {
+      "id": "XEgynpx4_mY8pBlzEqetx",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T15:08:47.119Z",
+      "deliveredAt": "2026-01-05T15:08:50.146Z",
+      "items": [
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "cantidad": 1,
+          "lineId": "_0mlfnd4VUeYB7g9OAJ1t",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T15:08:50.146Z"
+    },
+    {
+      "id": "HZKrrIZBHHhR2EzLk4sAj",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T15:10:09.964Z",
+      "deliveredAt": "2026-01-05T15:10:12.557Z",
+      "items": [
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "cantidad": 1,
+          "lineId": "xqkf6Z-mlRY4cAhtg1e4x",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T15:10:12.557Z"
+    },
+    {
+      "id": "4JvFEznFpb2vzzCij2wpP",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T15:12:25.432Z",
+      "deliveredAt": "2026-01-05T15:12:29.473Z",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 1,
+          "lineId": "-w_da5qsz_8lbB-xwPMhk",
+          "status": "entregado"
+        }
+      ],
+      "debtId": "glRHf-1NyhDOH7yjflXX7",
+      "updatedAt": "2026-01-05T15:12:39.097Z"
+    },
+    {
+      "id": "zdUseg6m5S31fFrVkEdUQ",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T15:14:22.859Z",
+      "deliveredAt": "2026-01-05T15:14:25.629Z",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 1,
+          "lineId": "Fm4zsZFSz1xeqM1G751Qq",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T15:14:25.629Z"
+    },
+    {
+      "id": "ord-maria-001",
+      "clienteId": "cli-maria-001",
+      "estado": "pendiente",
+      "createdAt": "2026-01-05T16:00:00.000Z",
+      "items": [
+        {
+          "productId": "prod-manzanas-001",
+          "cantidad": 2,
+          "lineId": "line-maria-apple",
+          "status": "pendiente"
+        },
+        {
+          "productId": "prod-naranjas-002",
+          "cantidad": 1,
+          "lineId": "line-maria-orange",
+          "status": "pendiente"
+        }
+      ],
+      "updatedAt": "2026-01-05T16:00:00.000Z"
+    },
+    {
+      "id": "ord-carlos-002",
+      "clienteId": "cli-carlos-002",
+      "estado": "completado",
+      "createdAt": "2026-01-05T16:30:00.000Z",
+      "deliveredAt": "2026-01-05T16:45:00.000Z",
+      "items": [
+        {
+          "productId": "prod-naranjas-002",
+          "cantidad": 3,
+          "lineId": "line-carlos-orange",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T16:45:00.000Z"
+    },
+    {
+      "id": "ord-ana-003",
+      "clienteId": "cli-ana-003",
+      "estado": "pendiente",
+      "createdAt": "2026-01-06T09:00:00.000Z",
+      "items": [
+        {
+          "productId": "prod-leche-004",
+          "cantidad": 1,
+          "lineId": "line-ana-leche",
+          "status": "pendiente"
+        },
+        {
+          "productId": "prod-pan-005",
+          "cantidad": 2,
+          "lineId": "line-ana-pan",
+          "status": "pendiente"
+        }
+      ],
+      "updatedAt": "2026-01-06T09:00:00.000Z"
+    },
+    {
+      "id": "ord-luis-004",
+      "clienteId": "cli-luis-004",
+      "estado": "completado",
+      "createdAt": "2026-01-06T10:15:00.000Z",
+      "deliveredAt": "2026-01-06T10:30:00.000Z",
+      "items": [
+        {
+          "productId": "prod-queso-007",
+          "cantidad": 1,
+          "lineId": "line-luis-queso",
+          "status": "entregado"
+        },
+        {
+          "productId": "prod-huevo-006",
+          "cantidad": 1,
+          "lineId": "line-luis-huevo",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-06T10:30:00.000Z"
+    },
+    {
+      "id": "ord-sofia-005",
+      "clienteId": "cli-sofia-005",
+      "estado": "pendiente",
+      "createdAt": "2026-01-06T11:00:00.000Z",
+      "items": [
+        {
+          "productId": "prod-bananas-003",
+          "cantidad": 3,
+          "lineId": "line-sofia-banana",
+          "status": "pendiente"
+        }
+      ],
+      "updatedAt": "2026-01-06T11:00:00.000Z"
+    },
+    {
+      "id": "ord-jorge-006",
+      "clienteId": "cli-jorge-006",
+      "estado": "completado",
+      "createdAt": "2026-01-06T12:00:00.000Z",
+      "deliveredAt": "2026-01-06T12:20:00.000Z",
+      "items": [
+        {
+          "productId": "prod-arroz-008",
+          "cantidad": 5,
+          "lineId": "line-jorge-arroz",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-06T12:20:00.000Z"
+    },
+    {
+      "id": "ord-vale-007",
+      "clienteId": "cli-vale-007",
+      "estado": "pendiente",
+      "createdAt": "2026-01-06T12:30:00.000Z",
+      "items": [
+        {
+          "productId": "prod-leche-004",
+          "cantidad": 2,
+          "lineId": "line-vale-leche",
+          "status": "pendiente"
+        },
+        {
+          "productId": "prod-queso-007",
+          "cantidad": 1,
+          "lineId": "line-vale-queso",
+          "status": "pendiente"
+        }
+      ],
+      "updatedAt": "2026-01-06T12:30:00.000Z"
+    },
+    {
+      "id": "ord-roberto-008",
+      "clienteId": "cli-roberto-008",
+      "estado": "completado",
+      "createdAt": "2026-01-06T13:00:00.000Z",
+      "deliveredAt": "2026-01-06T13:10:00.000Z",
+      "items": [
+        {
+          "productId": "prod-pan-005",
+          "cantidad": 3,
+          "lineId": "line-roberto-pan",
+          "status": "entregado"
+        },
+        {
+          "productId": "prod-leche-004",
+          "cantidad": 1,
+          "lineId": "line-roberto-leche",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-06T13:10:00.000Z"
+    },
+    {
+      "id": "ord-andrea-009",
+      "clienteId": "cli-andrea-009",
+      "estado": "pendiente",
+      "createdAt": "2026-01-06T14:00:00.000Z",
+      "items": [
+        {
+          "productId": "prod-huevo-006",
+          "cantidad": 1,
+          "lineId": "line-andrea-huevo",
+          "status": "pendiente"
+        },
+        {
+          "productId": "prod-arroz-008",
+          "cantidad": 4,
+          "lineId": "line-andrea-arroz",
+          "status": "pendiente"
+        }
+      ],
+      "updatedAt": "2026-01-06T14:00:00.000Z"
     }
   ],
   "debts": [
@@ -133,6 +548,54 @@
       "updatedAt": "2026-01-05T14:46:13.670Z",
       "paidAt": "2026-01-05T14:46:13.670Z",
       "cashflowEntryId": "LwwEKM0OqJ7ugoaAwiK-G"
+    },
+    {
+      "id": "s0yoyeraB5BNG8rF9vaoA",
+      "clientId": "GhdO6eh729fNUDUiM5R7T",
+      "orderIds": [
+        "0BnCUZ5lcyxBzkYaHC3mQ"
+      ],
+      "amount": 2990,
+      "status": "pagada",
+      "note": "",
+      "items": [
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "name": "Tomates",
+          "unit": "Malla",
+          "unitPrice": 2990,
+          "quantity": 1,
+          "subtotal": 2990
+        }
+      ],
+      "createdAt": "2026-01-05T14:59:59.329Z",
+      "updatedAt": "2026-01-05T15:00:27.918Z",
+      "paidAt": "2026-01-05T15:00:27.918Z",
+      "cashflowEntryId": "9zjWAAsYOxzapsBEDuP4-"
+    },
+    {
+      "id": "glRHf-1NyhDOH7yjflXX7",
+      "clientId": "GhdO6eh729fNUDUiM5R7T",
+      "orderIds": [
+        "4JvFEznFpb2vzzCij2wpP"
+      ],
+      "amount": 3900,
+      "status": "pagada",
+      "note": "",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "name": "Paltas",
+          "unit": "Malla",
+          "unitPrice": 3900,
+          "quantity": 1,
+          "subtotal": 3900
+        }
+      ],
+      "createdAt": "2026-01-05T15:12:29.473Z",
+      "updatedAt": "2026-01-05T15:12:39.097Z",
+      "paidAt": "2026-01-05T15:12:39.097Z",
+      "cashflowEntryId": "UdV5uOvapTNGjVwsbu5FR"
     }
   ],
   "cashflow": [
@@ -162,6 +625,64 @@
       "description": "Pago deuda Juanito",
       "date": "2026-01-05T14:46:13.670Z",
       "createdAt": "2026-01-05T14:46:13.670Z"
+    },
+    {
+      "id": "rHIwYEVl4ikjQVyBRfli1",
+      "type": "ingreso",
+      "amount": 3900,
+      "category": "Ventas",
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T15:00:02.322Z",
+      "createdAt": "2026-01-05T15:00:02.322Z"
+    },
+    {
+      "id": "9zjWAAsYOxzapsBEDuP4-",
+      "type": "ingreso",
+      "amount": 2990,
+      "category": "Cobranza",
+      "description": "Pago deuda Juanito",
+      "date": "2026-01-05T15:00:27.918Z",
+      "createdAt": "2026-01-05T15:00:27.918Z"
+    },
+    {
+      "id": "izajiiQdRbzyqmaSpTU7E",
+      "type": "ingreso",
+      "amount": 2990,
+      "category": "Ventas",
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T15:08:55.908Z",
+      "createdAt": "2026-01-05T15:08:55.908Z",
+      "paymentMethod": "transferencia"
+    },
+    {
+      "id": "6iUub5CAQPibC0wCouMtl",
+      "type": "ingreso",
+      "amount": 2990,
+      "category": "Ventas",
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T15:10:18.182Z",
+      "createdAt": "2026-01-05T15:10:18.182Z",
+      "paymentMethod": "efectivo"
+    },
+    {
+      "id": "UdV5uOvapTNGjVwsbu5FR",
+      "type": "ingreso",
+      "amount": 3900,
+      "category": "Cobranza",
+      "description": "Pago deuda Juanito",
+      "date": "2026-01-05T15:12:39.097Z",
+      "createdAt": "2026-01-05T15:12:39.097Z",
+      "paymentMethod": "efectivo"
+    },
+    {
+      "id": "CUHxuq9JT2aZIuZ385Y0o",
+      "type": "ingreso",
+      "amount": 3900,
+      "category": "Ventas",
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T15:14:28.386Z",
+      "createdAt": "2026-01-05T15:14:28.386Z",
+      "paymentMethod": "transferencia"
     }
   ],
   "pricing": {
@@ -169,6 +690,120 @@
     "preciosPorComuna": {}
   },
   "activities": [
+    {
+      "id": "1aiafqhCnQihH_FR6F-oc",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $3.900",
+      "createdAt": "2026-01-05T15:14:28.386Z"
+    },
+    {
+      "id": "jQYmjdngIH31EhKUcmJEx",
+      "title": "Entrega registrada: zdUseg6m5S31fFrVkEdUQ",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T15:14:25.629Z"
+    },
+    {
+      "id": "RCpwXW6EJcsSTs7WPbv1Y",
+      "title": "Pedido creado: zdUseg6m5S31fFrVkEdUQ",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T15:14:22.860Z"
+    },
+    {
+      "id": "HDkwY5VItprz_vwk2mRpR",
+      "title": "Deuda pagada: Juanito",
+      "detail": "$3.900",
+      "createdAt": "2026-01-05T15:12:39.097Z"
+    },
+    {
+      "id": "CI9oPV6Z-9OORQO8atiwC",
+      "title": "Deuda creada: Juanito",
+      "detail": "1 pedidos · $3.900",
+      "createdAt": "2026-01-05T15:12:29.473Z"
+    },
+    {
+      "id": "vz8gS4isghp_T_mxzNhhC",
+      "title": "Pedido creado: 4JvFEznFpb2vzzCij2wpP",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T15:12:25.433Z"
+    },
+    {
+      "id": "NNjMBxRMmREOD5MABVuDN",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $2.990",
+      "createdAt": "2026-01-05T15:10:18.183Z"
+    },
+    {
+      "id": "QwsNj9Jp-HMVRjitN3BJq",
+      "title": "Entrega registrada: HZKrrIZBHHhR2EzLk4sAj",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T15:10:12.557Z"
+    },
+    {
+      "id": "E0MQC3jOnjzItuLrUplpt",
+      "title": "Pedido creado: HZKrrIZBHHhR2EzLk4sAj",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T15:10:09.965Z"
+    },
+    {
+      "id": "QHF73zbbxJ7X_bPvYD6x0",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $2.990",
+      "createdAt": "2026-01-05T15:08:55.920Z"
+    },
+    {
+      "id": "jFVN7MbOYbLqd1yz3NtXx",
+      "title": "Entrega registrada: XEgynpx4_mY8pBlzEqetx",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T15:08:50.146Z"
+    },
+    {
+      "id": "CeXHVgaMxSuaSyBXrXZW-",
+      "title": "Pedido creado: XEgynpx4_mY8pBlzEqetx",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T15:08:47.120Z"
+    },
+    {
+      "id": "yjNEiH_Irboy_6an5aIhz",
+      "title": "Entrega registrada: Dpaa2_WP9d3w3qLO-11dc",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T15:06:58.140Z"
+    },
+    {
+      "id": "9anRW6Phhgh0QY6WbF8iE",
+      "title": "Pedido creado: Dpaa2_WP9d3w3qLO-11dc",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T15:06:54.498Z"
+    },
+    {
+      "id": "b_6Vam-zS9D6Cn_uiXRcU",
+      "title": "Deuda pagada: Juanito",
+      "detail": "$2.990",
+      "createdAt": "2026-01-05T15:00:27.918Z"
+    },
+    {
+      "id": "lmgNnmTs0Q5feNEt2sBsc",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $3.900",
+      "createdAt": "2026-01-05T15:00:02.323Z"
+    },
+    {
+      "id": "XA8M05CXvdiq6qWyD3mBS",
+      "title": "Entrega registrada: 0BnCUZ5lcyxBzkYaHC3mQ",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T15:00:02.300Z"
+    },
+    {
+      "id": "KCWgarGUQ4dG3pmId_suj",
+      "title": "Deuda creada: Juanito",
+      "detail": "1 pedidos · $2.990",
+      "createdAt": "2026-01-05T14:59:59.329Z"
+    },
+    {
+      "id": "-1rQgtHa9ucPKAQPLGPNq",
+      "title": "Pedido creado: 0BnCUZ5lcyxBzkYaHC3mQ",
+      "detail": "Juanito · 2 ítems",
+      "createdAt": "2026-01-05T14:59:38.151Z"
+    },
     {
       "id": "Gvp-sLHHIdo0PxGehzxKH",
       "title": "Deuda pagada: Juanito",
@@ -234,30 +869,6 @@
       "title": "Entrega registrada: 3GeM-P_Q75f__AJY632Qr",
       "detail": "Juanito · 1 producto",
       "createdAt": "2026-01-05T13:27:06.670Z"
-    },
-    {
-      "id": "DIGrqrzr9bdf-5-c2hd4X",
-      "title": "Pedido creado: 3GeM-P_Q75f__AJY632Qr",
-      "detail": "Juanito · 2 ítems",
-      "createdAt": "2026-01-05T13:26:51.170Z"
-    },
-    {
-      "id": "GvnZKigDEDWf3j-5gXn88",
-      "title": "Producto creado: Tomates",
-      "detail": "Nuevo producto agregado al inventario",
-      "createdAt": "2026-01-05T13:26:01.112Z"
-    },
-    {
-      "id": "V-s0AYLBEvOhn0qW_LJRH",
-      "title": "Producto creado: Paltas",
-      "detail": "Nuevo producto agregado al inventario",
-      "createdAt": "2026-01-05T13:25:40.039Z"
-    },
-    {
-      "id": "_5Cm5mwuLbPwsUSprOMwr",
-      "title": "Cliente agregado: Juanito",
-      "detail": "Puente Alto · 4 2342 3423 · Entrega Lunes",
-      "createdAt": "2026-01-05T13:14:31.968Z"
     }
   ],
   "settings": {

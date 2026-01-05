@@ -130,9 +130,10 @@ export const api = {
   async getDebts() {
     return request('/api/debts')
   },
-  async payDebt(debtId) {
+  async payDebt(debtId, payload = {}) {
     return request(`/api/debts/${debtId}/pay`, {
       method: 'POST',
+      body: JSON.stringify(payload),
     })
   },
   async getPendingClients() {
