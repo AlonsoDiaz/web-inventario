@@ -1,193 +1,249 @@
 {
   "products": [
     {
-      "id": "k4Z25mxy8iwcYzmbsLv55",
-      "name": "Huevos",
-      "unitPrice": 7000,
-      "category": "Huevos",
+      "id": "YwnyId5-enHjELMp4yGqd",
+      "name": "Paltas",
+      "unitPrice": 3900,
+      "category": "General",
       "notes": "",
-      "unit": "Bandeja"
+      "unit": "Malla"
+    },
+    {
+      "id": "f0-xYCrhOpbHPyZvsKVzg",
+      "name": "Tomates",
+      "unitPrice": 2990,
+      "category": "General",
+      "notes": "",
+      "unit": "Malla"
     }
   ],
   "clients": [
     {
-      "id": "WWH_dfafiTbepvIRfI_ZM",
-      "nombreCompleto": "Cristian Perez",
-      "telefono": "9 5436 1457",
-      "direccion": "Lirios 323",
-      "comuna": "Maipú"
+      "id": "GhdO6eh729fNUDUiM5R7T",
+      "nombreCompleto": "Juanito",
+      "telefono": "4 2342 3423",
+      "direccion": "ffff",
+      "comuna": "Puente Alto",
+      "diaReparto": "Lunes"
     }
   ],
   "orders": [
     {
-      "id": "aQJMwNOWFojy-ECj0ckEI",
-      "clienteId": "WWH_dfafiTbepvIRfI_ZM",
+      "id": "3GeM-P_Q75f__AJY632Qr",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
       "estado": "completado",
-      "createdAt": "2025-12-16T21:40:12.891Z",
-      "deliveredAt": "2025-12-16T21:40:28.834Z",
+      "createdAt": "2026-01-05T13:26:51.169Z",
+      "deliveredAt": "2026-01-05T13:27:13.268Z",
       "items": [
         {
-          "productId": "k4Z25mxy8iwcYzmbsLv55",
-          "cantidad": 1
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 2,
+          "lineId": "a0gh3PYoaAGnBBI1RUqP1",
+          "status": "entregado"
+        },
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "cantidad": 1,
+          "lineId": "XcdM1_EB1qE_2DCp34Hr3",
+          "status": "entregado"
         }
-      ]
+      ],
+      "updatedAt": "2026-01-05T13:32:55.789Z",
+      "debtId": "_NitdDchERvCj8-E3cC5M"
     },
     {
-      "id": "I9bgFVOeKQZ2TOkUlOyJZ",
-      "clienteId": "WWH_dfafiTbepvIRfI_ZM",
-      "estado": "completado",
-      "createdAt": "2025-12-17T01:20:20.450Z",
-      "deliveredAt": "2025-12-17T01:20:52.239Z",
+      "id": "RiOr06x5r2XGIqdH1-8-y",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "deuda",
+      "createdAt": "2026-01-05T13:30:20.456Z",
+      "deliveredAt": "2026-01-05T13:30:24.357Z",
       "items": [
         {
-          "productId": "k4Z25mxy8iwcYzmbsLv55",
-          "cantidad": 1
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "cantidad": 1,
+          "lineId": "-hkM2UeN0ZaLoAYDlCUSd",
+          "status": "deuda"
         }
-      ]
+      ],
+      "debtId": "Dno9_92OHW3nuYfF9zA9Y",
+      "updatedAt": "2026-01-05T13:30:24.357Z"
+    },
+    {
+      "id": "1z5ky-EYwgTg2rsapjNDa",
+      "clienteId": "GhdO6eh729fNUDUiM5R7T",
+      "estado": "completado",
+      "createdAt": "2026-01-05T13:35:59.030Z",
+      "deliveredAt": "2026-01-05T13:37:31.308Z",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "cantidad": 1,
+          "lineId": "7_IvW7m24OSRwKvUXYEUS",
+          "status": "entregado"
+        }
+      ],
+      "updatedAt": "2026-01-05T13:37:31.308Z"
+    }
+  ],
+  "debts": [
+    {
+      "id": "_NitdDchERvCj8-E3cC5M",
+      "clientId": "GhdO6eh729fNUDUiM5R7T",
+      "orderIds": [
+        "3GeM-P_Q75f__AJY632Qr"
+      ],
+      "amount": 7800,
+      "status": "pagada",
+      "note": "",
+      "items": [
+        {
+          "productId": "YwnyId5-enHjELMp4yGqd",
+          "name": "Paltas",
+          "unit": "Malla",
+          "unitPrice": 3900,
+          "quantity": 2,
+          "subtotal": 7800
+        }
+      ],
+      "createdAt": "2026-01-05T13:27:13.268Z",
+      "updatedAt": "2026-01-05T13:32:55.789Z",
+      "paidAt": "2026-01-05T13:32:55.789Z",
+      "cashflowEntryId": "4_qDNhxwtHj2LNoslaoFy"
+    },
+    {
+      "id": "Dno9_92OHW3nuYfF9zA9Y",
+      "clientId": "GhdO6eh729fNUDUiM5R7T",
+      "orderIds": [
+        "RiOr06x5r2XGIqdH1-8-y"
+      ],
+      "amount": 2990,
+      "status": "pendiente",
+      "note": "",
+      "items": [
+        {
+          "productId": "f0-xYCrhOpbHPyZvsKVzg",
+          "name": "Tomates",
+          "unit": "Malla",
+          "unitPrice": 2990,
+          "quantity": 1,
+          "subtotal": 2990
+        }
+      ],
+      "createdAt": "2026-01-05T13:30:24.357Z",
+      "updatedAt": "2026-01-05T13:30:24.357Z"
     }
   ],
   "cashflow": [
     {
-      "id": "UId1SKy3qmk-PKPMyV4Gp",
+      "id": "iwuWzTwxQnUNLTV7DXf_k",
       "type": "ingreso",
-      "amount": 24000,
+      "amount": 2990,
       "category": "Ventas",
-      "description": "Venta a Juan Carlos",
-      "date": "2025-12-17T01:20:48.784Z",
-      "createdAt": "2025-12-17T01:20:48.784Z"
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T13:27:06.687Z",
+      "createdAt": "2026-01-05T13:27:06.687Z"
     },
     {
-      "id": "eSa6uEMHCrkUa9Lew_NQF",
+      "id": "4_qDNhxwtHj2LNoslaoFy",
       "type": "ingreso",
-      "amount": 7000,
+      "amount": 7800,
+      "category": "Cobranza",
+      "description": "Pago deuda Juanito",
+      "date": "2026-01-05T13:32:55.789Z",
+      "createdAt": "2026-01-05T13:32:55.789Z"
+    },
+    {
+      "id": "Ss51STjFuB3o_Av-paBUb",
+      "type": "ingreso",
+      "amount": 3900,
       "category": "Ventas",
-      "description": "Venta a Cristian Perez",
-      "date": "2025-12-17T01:20:52.253Z",
-      "createdAt": "2025-12-17T01:20:52.253Z"
+      "description": "Entrega a Juanito",
+      "date": "2026-01-05T13:37:31.329Z",
+      "createdAt": "2026-01-05T13:37:31.329Z"
     }
   ],
   "pricing": {
     "precioCaja": 0,
-    "preciosPorComuna": {
-      "Melipilla": {
-        "k4Z25mxy8iwcYzmbsLv55": 8000
-      }
-    }
+    "preciosPorComuna": {}
   },
   "activities": [
     {
-      "id": "KjjlXUjmaKl7LDFDNfduS",
-      "title": "Cliente eliminado: Juan Carlos",
-      "detail": "Melipilla · 9343234",
-      "createdAt": "2025-12-17T01:40:03.300Z"
-    },
-    {
-      "id": "zYHwhynWesnj4m-ckaKJi",
-      "title": "Producto actualizado: Huevos",
-      "detail": "Se actualizaron detalles del producto.",
-      "createdAt": "2025-12-17T01:39:49.703Z"
-    },
-    {
-      "id": "Btwj1E6eBfvuqdGZ59nUA",
-      "title": "Pedido creado: G355yNVzZzAIAOs3MflET",
-      "detail": "Juan Carlos · 1 ítems",
-      "createdAt": "2025-12-17T01:24:40.134Z"
-    },
-    {
-      "id": "mexVCEmcXvVwF3l2f4ymd",
+      "id": "JSTRDO-dF2PbWJGQ8Hqs5",
       "title": "Ingreso registrado",
-      "detail": "Ventas · $7.000",
-      "createdAt": "2025-12-17T01:20:52.285Z"
+      "detail": "Ventas · $3.900",
+      "createdAt": "2026-01-05T13:37:31.342Z"
     },
     {
-      "id": "qfgCKvxSJiwDLeBpDDCfs",
-      "title": "Pedido entregado: I9bgFVOeKQZ2TOkUlOyJZ",
-      "detail": "Cristian Perez · Maipú · Pedido I9bgFVOeKQZ2TOkUlOyJZ",
-      "createdAt": "2025-12-17T01:20:52.242Z"
+      "id": "xz76tPwQaAGWbFCuxJGem",
+      "title": "Entrega registrada: 1z5ky-EYwgTg2rsapjNDa",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T13:37:31.308Z"
     },
     {
-      "id": "jmt4GIF_TggaFJEBzCJVj",
+      "id": "g5_XeAyrBPvVRCNk6IfRP",
+      "title": "Pedido creado: 1z5ky-EYwgTg2rsapjNDa",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T13:35:59.031Z"
+    },
+    {
+      "id": "pTVfgIa2LS3DcTH0KrUXq",
+      "title": "Deuda pagada: Juanito",
+      "detail": "$7.800",
+      "createdAt": "2026-01-05T13:32:55.789Z"
+    },
+    {
+      "id": "OMRSuqjI8U5HMXR2eCOGQ",
+      "title": "Deuda creada: Juanito",
+      "detail": "1 pedidos · $2.990",
+      "createdAt": "2026-01-05T13:30:24.357Z"
+    },
+    {
+      "id": "HGbOWLmS61c80p61wLkNd",
+      "title": "Pedido creado: RiOr06x5r2XGIqdH1-8-y",
+      "detail": "Juanito · 1 ítems",
+      "createdAt": "2026-01-05T13:30:20.457Z"
+    },
+    {
+      "id": "9abRsyue7Oyw2zteXmmjF",
+      "title": "Deuda creada: Juanito",
+      "detail": "1 pedidos · $7.800",
+      "createdAt": "2026-01-05T13:27:13.268Z"
+    },
+    {
+      "id": "fAw-EoqCBtHAk1OqmgjJl",
       "title": "Ingreso registrado",
-      "detail": "Ventas · $24.000",
-      "createdAt": "2025-12-17T01:20:48.809Z"
+      "detail": "Ventas · $2.990",
+      "createdAt": "2026-01-05T13:27:06.688Z"
     },
     {
-      "id": "SCVABVQjMJj2nzTtwAxWx",
-      "title": "Pedido entregado: PVqc_kyO0PIuKj4RSC3QA",
-      "detail": "Juan Carlos · Melipilla · Pedido PVqc_kyO0PIuKj4RSC3QA",
-      "createdAt": "2025-12-17T01:20:48.773Z"
+      "id": "92cAuTULWQ_cPOGHaDYZl",
+      "title": "Entrega registrada: 3GeM-P_Q75f__AJY632Qr",
+      "detail": "Juanito · 1 producto",
+      "createdAt": "2026-01-05T13:27:06.670Z"
     },
     {
-      "id": "9dsfoReOxRpWZ-Qllg5fb",
-      "title": "Pedido creado: I9bgFVOeKQZ2TOkUlOyJZ",
-      "detail": "Cristian Perez · 1 ítems",
-      "createdAt": "2025-12-17T01:20:20.451Z"
+      "id": "DIGrqrzr9bdf-5-c2hd4X",
+      "title": "Pedido creado: 3GeM-P_Q75f__AJY632Qr",
+      "detail": "Juanito · 2 ítems",
+      "createdAt": "2026-01-05T13:26:51.170Z"
     },
     {
-      "id": "ApDtfWTEIK26FfdPgSC83",
-      "title": "Pedido creado: PVqc_kyO0PIuKj4RSC3QA",
-      "detail": "Juan Carlos · 1 ítems",
-      "createdAt": "2025-12-16T23:59:51.367Z"
-    },
-    {
-      "id": "7xsflu_CVZcA8pXn4REUI",
-      "title": "Pedido entregado: aQJMwNOWFojy-ECj0ckEI",
-      "detail": "Cristian Perez · Maipú · Pedido aQJMwNOWFojy-ECj0ckEI",
-      "createdAt": "2025-12-16T21:40:28.836Z"
-    },
-    {
-      "id": "RxRwNkEIBfrHfInLk_RHf",
-      "title": "Pedido entregado: vGWb4pHy2j853cy8XNUfp",
-      "detail": "Juan Carlos · Melipilla · Pedido vGWb4pHy2j853cy8XNUfp",
-      "createdAt": "2025-12-16T21:40:27.919Z"
-    },
-    {
-      "id": "gIEuQ-VwVrJYuf5HLu0Ot",
-      "title": "Pedido creado: aQJMwNOWFojy-ECj0ckEI",
-      "detail": "Cristian Perez · 1 ítems",
-      "createdAt": "2025-12-16T21:40:12.892Z"
-    },
-    {
-      "id": "YQ_MhoQvTxVeb6NCY9rUf",
-      "title": "Pedido creado: vGWb4pHy2j853cy8XNUfp",
-      "detail": "Juan Carlos · 1 ítems",
-      "createdAt": "2025-12-16T21:40:04.185Z"
-    },
-    {
-      "id": "M-xlTx6gsXCvv6L7vil6N",
-      "title": "Precio por comuna actualizado",
-      "detail": "Huevos · Melipilla → $8.000",
-      "createdAt": "2025-12-16T21:39:33.230Z"
-    },
-    {
-      "id": "lbHVg_gtszPaqY2i6FnaJ",
-      "title": "Cliente agregado: Cristian Perez",
-      "detail": "Maipú · 9 5436 1457",
-      "createdAt": "2025-12-16T21:39:17.337Z"
-    },
-    {
-      "id": "zSw6_KtV9AKHNtm-etsYQ",
-      "title": "Pedido entregado: -M71YIgUwRGBmsJysbaW9",
-      "detail": "Juan Carlos · Melipilla · Pedido -M71YIgUwRGBmsJysbaW9",
-      "createdAt": "2025-12-16T21:27:34.094Z"
-    },
-    {
-      "id": "XRSnIQkJjqGkxoIsePvdw",
-      "title": "Pedido creado: -M71YIgUwRGBmsJysbaW9",
-      "detail": "Juan Carlos · 1 ítems",
-      "createdAt": "2025-12-16T21:27:30.229Z"
-    },
-    {
-      "id": "1xvmiDCYRi6wcKBU9dFca",
-      "title": "Producto creado: Huevos",
+      "id": "GvnZKigDEDWf3j-5gXn88",
+      "title": "Producto creado: Tomates",
       "detail": "Nuevo producto agregado al inventario",
-      "createdAt": "2025-12-16T21:27:17.426Z"
+      "createdAt": "2026-01-05T13:26:01.112Z"
     },
     {
-      "id": "pHU-HsrBOH7QrPEgkcfSz",
-      "title": "Cliente agregado: Juan Carlos",
-      "detail": "Melipilla · 9343234 · Entrega Lunes",
-      "createdAt": "2025-12-16T21:26:07.355Z"
+      "id": "V-s0AYLBEvOhn0qW_LJRH",
+      "title": "Producto creado: Paltas",
+      "detail": "Nuevo producto agregado al inventario",
+      "createdAt": "2026-01-05T13:25:40.039Z"
+    },
+    {
+      "id": "_5Cm5mwuLbPwsUSprOMwr",
+      "title": "Cliente agregado: Juanito",
+      "detail": "Puente Alto · 4 2342 3423 · Entrega Lunes",
+      "createdAt": "2026-01-05T13:14:31.968Z"
     }
   ],
   "settings": {

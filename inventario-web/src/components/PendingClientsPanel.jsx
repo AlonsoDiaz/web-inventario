@@ -76,6 +76,7 @@ const PendingClientsPanel = ({
   data,
   searchTerm = '',
   onMarkDelivered,
+  onCreateDebt,
   onCancelOrders,
   isUpdating = false,
   processingClientId = null,
@@ -224,6 +225,14 @@ const PendingClientsPanel = ({
     }
 
     onCancelOrders(entry)
+  }
+
+  const handleCreateDebt = (entry) => {
+    if (!onCreateDebt || !Array.isArray(entry?.orderIds) || entry.orderIds.length === 0) {
+      return
+    }
+
+    onCreateDebt(entry)
   }
 
   const handleExport = async () => {
@@ -502,7 +511,7 @@ const PendingClientsPanel = ({
     <section className="panel pending-clients-panel" aria-label="Clientes con pedidos pendientes">
       <header className="panel-header">
         <div>
-          <h2>Clientes con pedidos pendientes</h2>
+          <h2>Pedidos Pendientes</h2>
           <p>Montos estimados según precios actuales de productos.</p>
         </div>
         <button
@@ -658,10 +667,19 @@ const PendingClientsPanel = ({
                               handleDelivered({ ...entry, orderIds })
                             }}
                             disabled={rowDisabled}
-                            aria-label={`Marcar como entregado a ${entry.client.nombreCompleto}`}
+                            aria-label={`Seleccionar productos entregados de ${entry.client.nombreCompleto}`}
                           />
-                          <span>{rowDisabled ? 'Marcando...' : 'Marcar entregado'}</span>
+                          <span>{rowDisabled ? 'Procesando...' : 'Marcar Entregado'}</span>
                         </label>
+                        <button
+                          type="button"
+                          className="chip-button"
+                          onClick={() => handleCreateDebt({ ...entry, orderIds })}
+                          disabled={rowDisabled}
+                          aria-label={`Crear deuda para ${entry.client.nombreCompleto}`}
+                        >
+                           Crear deuda
+                        </button>
                         <button
                           type="button"
                           className="chip-button"
@@ -669,7 +687,7 @@ const PendingClientsPanel = ({
                           disabled={rowDisabled}
                           aria-label={`Cancelar pedidos de ${entry.client.nombreCompleto}`}
                         >
-                          🗑 Cancelar
+                          Cancelar Pedido
                         </button>
                       </div>
                       {orderIds.length > 1 && (

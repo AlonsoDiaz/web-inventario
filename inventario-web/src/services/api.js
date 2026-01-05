@@ -115,10 +115,24 @@ export const api = {
       body: JSON.stringify({ orderIds }),
     })
   },
-  async markOrdersDelivered(orderIds) {
+  async markOrdersDelivered(payload) {
     return request('/api/orders/mark-delivered', {
       method: 'POST',
-      body: JSON.stringify({ orderIds }),
+      body: JSON.stringify(payload),
+    })
+  },
+  async createDebt(payload) {
+    return request('/api/debts', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+  async getDebts() {
+    return request('/api/debts')
+  },
+  async payDebt(debtId) {
+    return request(`/api/debts/${debtId}/pay`, {
+      method: 'POST',
     })
   },
   async getPendingClients() {

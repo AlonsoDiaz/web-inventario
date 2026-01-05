@@ -34,6 +34,7 @@ const ClientEditForm = ({
   onSubmit,
   onDeleteClient,
   submitting,
+  onRequestConfirm,
 }) => {
   const [selectedId, setSelectedId] = useState('')
   const [form, setForm] = useState(() => toFormState(null))
@@ -94,18 +95,29 @@ const ClientEditForm = ({
     })
   }
 
-  const handleDeleteClient = () => {
+  const handleDeleteClient = async () => {
     if (!selectedClient || typeof onDeleteClient !== 'function') {
       return
     }
     const confirmMessage = `¿Eliminar al cliente ${selectedClient.nombreCompleto}? Sus pedidos asociados se eliminarán.`
-    if (typeof window !== 'undefined') {
-      const confirmed = window.confirm(confirmMessage)
-      if (!confirmed) {
-        return
-      }
+    if (typeof onRequestConfirm !== 'function') {
+      onDeleteClient(selectedClient.id)
+      return
     }
-    onDeleteClient(selectedClient.id)
+
+    const confirmed = await onRequestConfirm({
+      title: 'Eliminar cliente',
+      message: confirmMessage,
+      detail: 'Esta acción no se puede deshacer y quitará al cliente del directorio.',
+      highlight: selectedClient.comuna || 'Sin comuna',
+      confirmLabel: 'Eliminar cliente',
+      cancelLabel: 'Conservar',
+      tone: 'danger',
+    })
+
+    if (confirmed) {
+      onDeleteClient(selectedClient.id)
+    }
   }
 
   return (

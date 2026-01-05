@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import Header from './components/Header.jsx'
 import ActionBar from './components/ActionBar.jsx'
@@ -17,10 +17,13 @@ import SummaryPanel from './components/SummaryPanel.jsx'
 import ReportViewer from './components/ReportViewer.jsx'
 import ProductCreateForm from './components/forms/ProductCreateForm.jsx'
 import PendingClientsPanel from './components/PendingClientsPanel.jsx'
+import DebtsPanel from './components/DebtsPanel.jsx'
 import ClientDirectoryPanel from './components/ClientDirectoryPanel.jsx'
 import CashflowPanel from './components/CashflowPanel.jsx'
 import CashflowEntryForm from './components/forms/CashflowEntryForm.jsx'
 import ClientInsightModal from './components/ClientInsightModal.jsx'
+import ConfirmDialog from './components/ConfirmDialog.jsx'
+import DeliverySelectionForm from './components/forms/DeliverySelectionForm.jsx'
 import { api } from './services/api.js'
 
 const DELIVERY_DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -73,6 +76,19 @@ const normalizeCashflow = (data = {}) => {
 
 const initialCashflow = normalizeCashflow()
 
+const normalizeDebts = (data = {}) => ({
+  debts: Array.isArray(data.debts)
+    ? data.debts.map((debt) => ({
+        ...debt,
+        items: Array.isArray(debt.items) ? debt.items : [],
+        client: debt.client || null,
+      }))
+    : [],
+  generatedAt: data.generatedAt || null,
+})
+
+const initialDebts = normalizeDebts()
+
 function App() {
   const [dashboard, setDashboard] = useState(initialDashboard)
   const [clients, setClients] = useState([])
@@ -92,7 +108,37 @@ function App() {
   const [pendingClientsProcessingId, setPendingClientsProcessingId] = useState(null)
   const [cashflow, setCashflow] = useState(initialCashflow)
   const [cashflowLoading, setCashflowLoading] = useState(false)
+  const [debts, setDebts] = useState(initialDebts)
+  const [debtsLoading, setDebtsLoading] = useState(false)
+  const [deliveryContext, setDeliveryContext] = useState(null)
+  const [debtContext, setDebtContext] = useState(null)
+  const [confirmDialog, setConfirmDialog] = useState(null)
+  const confirmResolveRef = useRef(null)
   const normalizedSearchTerm = useMemo(() => normalizeText(searchTerm), [searchTerm])
+
+  const openConfirmDialog = (config = {}) =>
+    new Promise((resolve) => {
+      confirmResolveRef.current = resolve
+      setConfirmDialog({
+        title: config.title || 'Confirmar acción',
+        message: config.message || '¿Deseas continuar?',
+        detail: config.detail || null,
+        highlight: config.highlight || null,
+        tone: config.tone || 'primary',
+        confirmLabel: config.confirmLabel || 'Confirmar',
+        cancelLabel: config.cancelLabel || 'Cancelar',
+        variant: config.variant || 'default',
+        accentIcon: config.accentIcon || null,
+      })
+    })
+
+  const resolveConfirmDialog = (result) => {
+    if (confirmResolveRef.current) {
+      confirmResolveRef.current(result)
+      confirmResolveRef.current = null
+    }
+    setConfirmDialog(null)
+  }
 
   const pendingSummaryMap = useMemo(() => {
     const map = new Map()
@@ -155,18 +201,21 @@ function App() {
     try {
       setLoading(true)
       setPendingClientsLoading(true)
-      const [dashboardData, clientData, ordersData, pendingClients, cashflowData] = await Promise.all([
+      setDebtsLoading(true)
+      const [dashboardData, clientData, ordersData, pendingClients, cashflowData, debtsData] = await Promise.all([
         api.getDashboard(),
         api.getClients(),
         api.getOrders(),
         api.getPendingClients(),
         api.getCashflow(),
+        api.getDebts(),
       ])
       setDashboard(normalizeDashboard(dashboardData))
       setClients(clientData)
       setOrders(ordersData)
       setPendingClientsData(pendingClients)
       setCashflow(normalizeCashflow(cashflowData))
+      setDebts(normalizeDebts(debtsData))
       setError(null)
     } catch (err) {
       console.error(err)
@@ -174,6 +223,7 @@ function App() {
     } finally {
       setLoading(false)
       setPendingClientsLoading(false)
+      setDebtsLoading(false)
     }
   }
 
@@ -204,6 +254,11 @@ function App() {
     }
   }
 
+  const refreshDebts = async () => {
+    const data = await api.getDebts()
+    setDebts(normalizeDebts(data))
+  }
+
   const fetchCashflow = async () => {
     try {
       setCashflowLoading(true)
@@ -225,9 +280,32 @@ function App() {
     window.setTimeout(() => setToast(null), 2800)
   }
 
+  const handleDebtsRefresh = async (notify = false) => {
+    try {
+      setDebtsLoading(true)
+      await refreshDebts()
+      if (notify) {
+        showToast('Deudas actualizadas')
+      }
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
+      throw err
+    } finally {
+      setDebtsLoading(false)
+    }
+  }
+
+  const handleOpenDebtsModal = () => {
+    setModal('view-debts')
+    handleDebtsRefresh().catch(() => null)
+  }
+
   const closeModal = () => {
     setModal(null)
     setActionLoading(false)
+    setDeliveryContext(null)
+    setDebtContext(null)
   }
 
   const handleEditChoice = (choice) => {
@@ -271,6 +349,9 @@ function App() {
         break
       case 'view-pending-clients':
         handlePendingClientsRefresh()
+        break
+      case 'view-debts':
+        handleOpenDebtsModal()
         break
       case 'record-cashflow':
         setModal('cashflow-entry')
@@ -522,7 +603,7 @@ function App() {
     try {
       setPendingClientsLoading(true)
       setPendingClientsProcessingId(null)
-      await fetchPendingClients()
+      await Promise.all([fetchPendingClients(), handleDebtsRefresh()])
       showToast('Clientes con deuda actualizados')
     } catch (err) {
       setError(err.message)
@@ -531,29 +612,66 @@ function App() {
     }
   }
 
-  const handleMarkOrdersDelivered = async (entry) => {
+  const getOrdersWithPendingItems = (entry) => {
+    if (!entry || !Array.isArray(entry.orders)) {
+      return []
+    }
+    return entry.orders.filter((order) => Array.isArray(order.items) && order.items.length > 0)
+  }
+
+  const handleMarkOrdersDelivered = (entry) => {
     if (!entry || !Array.isArray(entry.orderIds) || entry.orderIds.length === 0) {
       showToast('No hay pedidos pendientes para este cliente')
       return
     }
 
+    const ordersWithItems = getOrdersWithPendingItems(entry)
+
+    if (!ordersWithItems.length) {
+      showToast('Actualiza el listado para seleccionar los productos entregados')
+      return
+    }
+
+    setDeliveryContext({ ...entry, orders: ordersWithItems })
+    setModal('delivery-selection')
+  }
+
+  const handleDeliverySelectionConfirm = async (deliveries) => {
+    if (!deliveryContext) {
+      showToast('Selecciona nuevamente al cliente para registrar la entrega')
+      return
+    }
+
+    if (!Array.isArray(deliveries) || deliveries.length === 0) {
+      showToast('Selecciona al menos un producto pendiente')
+      return
+    }
+
+    const clientId = deliveryContext.client?.id || null
+    const clientName = deliveryContext.client?.nombreCompleto?.trim() || ''
+
     try {
       setPendingClientsSubmitting(true)
-      setPendingClientsProcessingId(entry.client?.id || null)
+      setPendingClientsProcessingId(clientId)
       setError(null)
-      await api.markOrdersDelivered(entry.orderIds)
-      const incomeAmount = Number(entry.totalAmount || 0)
-      const clientName = entry.client?.nombreCompleto?.trim() || ''
+
+      const response = await api.markOrdersDelivered({ deliveries })
+      const deliveredItems = Array.isArray(response?.deliveredItems)
+        ? response.deliveredItems
+        : []
+      const deliveredCount = deliveredItems.length
+      const deliveredAmount = Number(response?.totalAmount || 0)
+
       let saleRegistered = false
       let cashflowError = null
 
-      if (incomeAmount > 0) {
+      if (deliveredAmount > 0) {
         try {
           await api.createCashflowEntry({
             type: 'ingreso',
-            amount: incomeAmount,
+            amount: deliveredAmount,
             category: 'Ventas',
-            description: clientName ? `Venta a ${clientName}` : 'Venta registrada',
+            description: clientName ? `Entrega a ${clientName}` : 'Entrega registrada',
           })
           saleRegistered = true
           await fetchCashflow().catch(() => null)
@@ -567,23 +685,140 @@ function App() {
         setError(cashflowError.message)
       }
 
-      const baseMessage = clientName
-        ? `Entrega confirmada: ${clientName}`
-        : 'Pedidos marcados como entregados'
-      const finalMessage = saleRegistered ? `${baseMessage} · Venta registrada` : baseMessage
-      showToast(
-        cashflowError ? `${finalMessage} (revisa ingresos)` : finalMessage,
-      )
+      const baseLabel = clientName ? `Entrega registrada: ${clientName}` : 'Entrega registrada'
+      const detailLabel = deliveredCount
+        ? `${deliveredCount} producto${deliveredCount === 1 ? '' : 's'}`
+        : null
+      const combined = detailLabel ? `${baseLabel} · ${detailLabel}` : baseLabel
+      const finalMessage = saleRegistered ? `${combined} · Venta registrada` : combined
+      showToast(cashflowError ? `${finalMessage} (revisa ingresos)` : finalMessage)
+
       await Promise.all([
         refreshDashboard(),
         refreshOrders(),
         fetchPendingClients().catch(() => null),
       ])
+
+      closeModal()
     } catch (err) {
       setError(err.message)
     } finally {
       setPendingClientsSubmitting(false)
       setPendingClientsProcessingId(null)
+    }
+  }
+
+  const handleDebtSelectionConfirm = async (selections) => {
+    if (!debtContext) {
+      showToast('Selecciona nuevamente al cliente para registrar la deuda')
+      return
+    }
+
+    if (!Array.isArray(selections) || selections.length === 0) {
+      showToast('Selecciona al menos un producto pendiente')
+      return
+    }
+
+    const clientId = debtContext.client?.id
+    if (!clientId) {
+      showToast('No se pudo identificar al cliente')
+      return
+    }
+
+    const clientName = debtContext.client?.nombreCompleto?.trim() || ''
+
+    try {
+      setPendingClientsSubmitting(true)
+      setPendingClientsProcessingId(clientId)
+      setError(null)
+
+      const response = await api.createDebt({
+        clientId,
+        selections,
+      })
+
+      const debtAmount = Number(response?.debt?.amount || 0)
+      const baseLabel = clientName ? `Deuda creada para ${clientName}` : 'Deuda registrada'
+      const amountLabel = debtAmount > 0 ? ` · $${debtAmount.toLocaleString('es-CL')}` : ''
+      showToast(`${baseLabel}${amountLabel}`)
+
+      await Promise.all([
+        refreshDashboard(),
+        refreshOrders(),
+        fetchPendingClients().catch(() => null),
+        handleDebtsRefresh().catch(() => null),
+      ])
+
+      closeModal()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setPendingClientsSubmitting(false)
+      setPendingClientsProcessingId(null)
+    }
+  }
+
+  const handleCreateDebt = (entry) => {
+    if (!entry || !Array.isArray(entry.orderIds) || entry.orderIds.length === 0) {
+      showToast('No hay pedidos pendientes para este cliente')
+      return
+    }
+
+    const clientId = entry.client?.id
+    if (!clientId) {
+      showToast('No se pudo identificar al cliente')
+      return
+    }
+
+    const ordersWithItems = getOrdersWithPendingItems(entry)
+    if (!ordersWithItems.length) {
+      showToast('Actualiza el listado para seleccionar los productos a deuda')
+      return
+    }
+
+    setDebtContext({ ...entry, orders: ordersWithItems })
+    setModal('debt-selection')
+  }
+
+  const handleMarkDebtPaid = async (debt) => {
+    if (!debt || !debt.id) {
+      showToast('No se pudo identificar la deuda')
+      return
+    }
+
+    const clientName = debt.client?.nombreCompleto?.trim() || ''
+    const amount = Number(debt.amount || 0)
+    const confirmed = await openConfirmDialog({
+      title: clientName ? `Registrar pago · ${clientName}` : 'Registrar pago',
+      message: 'Confirma que recibiste el pago de esta deuda.',
+      detail: 'El monto se sumará a los ingresos del día y la deuda quedará marcada como pagada.',
+      highlight: amount > 0 ? `$${amount.toLocaleString('es-CL')}` : null,
+      confirmLabel: 'Registrar pago',
+      cancelLabel: 'Volver',
+      tone: 'success',
+      variant: 'receipt',
+      accentIcon: '💸',
+    })
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setDebtsLoading(true)
+      setError(null)
+      await api.payDebt(debt.id)
+      showToast(clientName ? `Pago registrado: ${clientName}` : 'Pago registrado')
+      await Promise.all([
+        refreshDashboard(),
+        refreshOrders(),
+        fetchPendingClients().catch(() => null),
+        refreshDebts().catch(() => null),
+        fetchCashflow().catch(() => null),
+      ])
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setDebtsLoading(false)
     }
   }
 
@@ -594,11 +829,18 @@ function App() {
     }
 
     const clientName = entry.client?.nombreCompleto?.trim() || ''
-    const confirmationMessage = clientName
-      ? `¿Cancelar los pedidos pendientes de ${clientName}?`
-      : '¿Cancelar los pedidos seleccionados?'
-
-    const confirmed = window.confirm(confirmationMessage)
+    const detailLabel = entry.orderIds.length > 1
+      ? `${entry.orderIds.length} pedidos serán eliminados.`
+      : `Se eliminará el pedido ${entry.orderIds[0]}.`
+    const confirmed = await openConfirmDialog({
+      title: clientName ? `Cancelar pedidos de ${clientName}` : 'Cancelar pedidos pendientes',
+      message: 'Los productos pendientes se descartarán y el cliente saldrá del listado.',
+      detail: detailLabel,
+      highlight: `${entry.orderIds.length} ${entry.orderIds.length === 1 ? 'pedido' : 'pedidos'}`,
+      confirmLabel: 'Sí, cancelar',
+      cancelLabel: 'Mantener pedidos',
+      tone: 'danger',
+    })
     if (!confirmed) {
       return
     }
@@ -653,15 +895,23 @@ function App() {
                   searchTerm={searchTerm}
                   onMarkDelivered={handleMarkOrdersDelivered}
                   onCancelOrders={handleCancelPendingOrders}
+                  onCreateDebt={handleCreateDebt}
                   isUpdating={pendingClientsSubmitting}
                   processingClientId={pendingClientsProcessingId}
                 />
               ) : (
                 <div className="panel empty-panel">
-                  <h2>Clientes sin deuda pendiente</h2>
+                  <h2>Sin pedidos pendientes</h2>
                   <p>No hay productos por entregar en este momento.</p>
                 </div>
               )}
+              <DebtsPanel
+                data={debts}
+                loading={debtsLoading}
+                limit={3}
+                onRefresh={() => handleDebtsRefresh(true).catch(() => null)}
+                onMarkPaid={handleMarkDebtPaid}
+              />
               <ClientDirectoryPanel
                 clients={clients}
                 pendingSummary={pendingSummaryMap}
@@ -706,6 +956,17 @@ function App() {
             diasReparto={dashboard.settings?.diasReparto || DELIVERY_DAYS}
             onSubmit={handleClientSubmit}
             submitting={actionLoading}
+          />
+        </Modal>
+      )}
+
+      {modal === 'view-debts' && (
+        <Modal title="Clientes con deudas" onClose={closeModal}>
+          <DebtsPanel
+            data={debts}
+            loading={debtsLoading}
+            onRefresh={() => handleDebtsRefresh(true).catch(() => null)}
+            onMarkPaid={handleMarkDebtPaid}
           />
         </Modal>
       )}
@@ -762,6 +1023,7 @@ function App() {
             onSubmit={handleProductUpdate}
             onDeleteProduct={handleProductDelete}
             submitting={actionLoading}
+            onRequestConfirm={openConfirmDialog}
           />
         </Modal>
       )}
@@ -775,6 +1037,7 @@ function App() {
             onSubmit={handleClientUpdate}
             onDeleteClient={handleClientDelete}
             submitting={actionLoading}
+            onRequestConfirm={openConfirmDialog}
           />
         </Modal>
       )}
@@ -830,10 +1093,57 @@ function App() {
         </Modal>
       )}
 
+      {modal === 'delivery-selection' && (
+        <Modal
+          title={
+            deliveryContext?.client?.nombreCompleto
+              ? `Registrar entrega · ${deliveryContext.client.nombreCompleto}`
+              : 'Registrar entrega'
+          }
+          onClose={closeModal}
+        >
+          <DeliverySelectionForm
+            entry={deliveryContext}
+            onCancel={closeModal}
+            onConfirm={handleDeliverySelectionConfirm}
+            isSubmitting={pendingClientsSubmitting}
+          />
+        </Modal>
+      )}
+
+      {modal === 'debt-selection' && (
+        <Modal
+          title={
+            debtContext?.client?.nombreCompleto
+              ? `Registrar deuda · ${debtContext.client.nombreCompleto}`
+              : 'Registrar deuda'
+          }
+          onClose={closeModal}
+        >
+          <DeliverySelectionForm
+            entry={debtContext}
+            onCancel={closeModal}
+            onConfirm={handleDebtSelectionConfirm}
+            isSubmitting={pendingClientsSubmitting}
+            introText="Selecciona los productos que pasarán a deuda. Solo se incluirán los seleccionados."
+            emptyStateMessage="No hay productos pendientes disponibles para registrar como deuda. Actualiza la lista e inténtalo nuevamente."
+            submitLabel="Confirmar deuda"
+          />
+        </Modal>
+      )}
+
       {modal === 'activity-feed' && (
         <Modal title="Actividad reciente" onClose={closeModal}>
           <ActivityFeed activities={dashboard.activities} variant="modal" />
         </Modal>
+      )}
+
+      {confirmDialog && (
+        <ConfirmDialog
+          {...confirmDialog}
+          onCancel={() => resolveConfirmDialog(false)}
+          onConfirm={() => resolveConfirmDialog(true)}
+        />
       )}
 
       {toast && <div className="toast" role="status">{toast}</div>}

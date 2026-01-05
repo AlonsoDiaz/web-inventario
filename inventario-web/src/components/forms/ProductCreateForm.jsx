@@ -16,6 +16,7 @@ const UNIT_OPTIONS = [
   'Mililitro',
   'Bolsa',
   'Pack',
+  'Malla',
 ]
 
 const initialState = {
@@ -51,7 +52,7 @@ const ProductCreateForm = ({ onSubmit, submitting }) => {
           required
           value={form.name}
           onChange={updateField('name')}
-          placeholder="Ej: Caja térmica 40L"
+          placeholder="Ej:  Paltas Hass"
         />
       </label>
       <label>
@@ -60,7 +61,7 @@ const ProductCreateForm = ({ onSubmit, submitting }) => {
           type="text"
           value={form.category}
           onChange={updateField('category')}
-          placeholder="Ej: Lácteos"
+          placeholder="Ej: Frutas"
         />
       </label>
       <label>

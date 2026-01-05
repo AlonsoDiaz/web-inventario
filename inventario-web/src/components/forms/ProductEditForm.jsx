@@ -40,7 +40,13 @@ const toFormState = (product) => {
   }
 }
 
-const ProductEditForm = ({ products = [], onSubmit, onDeleteProduct, submitting }) => {
+const ProductEditForm = ({
+  products = [],
+  onSubmit,
+  onDeleteProduct,
+  submitting,
+  onRequestConfirm,
+}) => {
   const [selectedId, setSelectedId] = useState('')
   const [form, setForm] = useState(() => toFormState(null))
 
@@ -95,18 +101,29 @@ const ProductEditForm = ({ products = [], onSubmit, onDeleteProduct, submitting 
     })
   }
 
-  const handleDeleteProduct = () => {
+  const handleDeleteProduct = async () => {
     if (!selectedProduct || typeof onDeleteProduct !== 'function') {
       return
     }
     const message = `¿Eliminar el producto ${selectedProduct.name}? Esta acción no se puede deshacer.`
-    if (typeof window !== 'undefined') {
-      const confirmed = window.confirm(message)
-      if (!confirmed) {
-        return
-      }
+    if (typeof onRequestConfirm !== 'function') {
+      onDeleteProduct(selectedProduct.id)
+      return
     }
-    onDeleteProduct(selectedProduct.id)
+
+    const confirmed = await onRequestConfirm({
+      title: 'Eliminar producto',
+      message,
+      detail: 'Se quitará del inventario y de los pedidos pendientes.',
+      highlight: selectedProduct.category || 'Inventario',
+      confirmLabel: 'Eliminar producto',
+      cancelLabel: 'Conservar',
+      tone: 'danger',
+    })
+
+    if (confirmed) {
+      onDeleteProduct(selectedProduct.id)
+    }
   }
 
   const hasProducts = products.length > 0

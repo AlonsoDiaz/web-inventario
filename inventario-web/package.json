@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "api": "npm --prefix server run dev",
-    "dev:all": "concurrently \"npm run api\" \"npm run dev\""
+    "ports:free": "kill-port 4000 5173 5174 5175",
+    "dev:all": "npm run ports:free && concurrently \"npm run api\" \"npm run dev\""
   },
   "dependencies": {
     "exceljs": "^4.4.0",
@@ -26,6 +27,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "kill-port": "^2.0.1",
     "vite": "npm:rolldown-vite@7.2.5"
   },
   "overrides": {

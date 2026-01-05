@@ -141,7 +141,7 @@ const resolvePriceForComuna = (productId, comuna, overrides, fallback) => {
 
 function computeMetrics(data) {
   const productosActivos = data.products.length
-  const pedidosPendientes = data.orders.filter((order) => order.estado !== 'completado').length
+  const pedidosPendientes = data.orders.filter((order) => order.estado === 'pendiente').length
   const clientesActivos = data.clients.length
 
   return {
@@ -185,6 +185,67 @@ function ensureActivityLog(data, activity) {
   }
 }
 
+function ensureDebtsCollection(data) {
+  if (!Array.isArray(data.debts)) {
+    data.debts = []
+  }
+  return data.debts
+}
+
+function ensureCashflowCollection(data) {
+  if (!Array.isArray(data.cashflow)) {
+    data.cashflow = []
+  }
+  return data.cashflow
+}
+
+const normalizeItemStatus = (status) => {
+  if (status === 'entregado' || status === 'deuda') {
+    return status
+  }
+  return 'pendiente'
+}
+
+function ensureOrderItemsStructure(order) {
+  if (!order || !Array.isArray(order.items)) {
+    order.items = []
+    return order.items
+  }
+  order.items = order.items.map((item) => {
+    if (!item.lineId) {
+      item.lineId = nanoid()
+    }
+    item.status = normalizeItemStatus(item.status)
+    return item
+  })
+  return order.items
+}
+
+function orderHasPendingItems(order) {
+  return ensureOrderItemsStructure(order).some((item) => normalizeItemStatus(item.status) === 'pendiente')
+}
+
+function recalculateOrderStatus(order) {
+  const items = ensureOrderItemsStructure(order)
+  const hasPending = items.some((item) => normalizeItemStatus(item.status) === 'pendiente')
+  if (hasPending) {
+    order.estado = 'pendiente'
+    return order.estado
+  }
+  const hasDebt = items.some((item) => item.status === 'deuda')
+  if (hasDebt) {
+    order.estado = 'deuda'
+    return order.estado
+  }
+  const hasDelivered = items.some((item) => item.status === 'entregado')
+  if (hasDelivered) {
+    order.estado = 'completado'
+    return order.estado
+  }
+  order.estado = 'pendiente'
+  return order.estado
+}
+
 function findProduct(data, productId) {
   const product = data.products.find((item) => item.id === productId)
   if (!product) {
@@ -193,6 +254,38 @@ function findProduct(data, productId) {
     throw error
   }
   return product
+}
+
+function formatDebtForResponse(debt, client) {
+  if (!debt) {
+    return null
+  }
+
+  const items = Array.isArray(debt.items)
+    ? debt.items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        unit: item.unit,
+        unitPrice: item.unitPrice,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+      }))
+    : []
+
+  return {
+    id: debt.id,
+    clientId: debt.clientId,
+    client: client || null,
+    orderIds: Array.isArray(debt.orderIds) ? debt.orderIds : [],
+    amount: Number.isFinite(Number(debt.amount)) ? Number(debt.amount) : 0,
+    status: debt.status || 'pendiente',
+    note: typeof debt.note === 'string' ? debt.note : '',
+    createdAt: debt.createdAt,
+    updatedAt: debt.updatedAt,
+    paidAt: debt.paidAt || null,
+    cashflowEntryId: debt.cashflowEntryId || null,
+    items,
+  }
 }
 
 app.get('/health', (_req, res) => {
@@ -555,6 +648,8 @@ app.post('/api/orders', async (req, res) => {
       return {
         productId,
         cantidad: parsedQuantity,
+        lineId: nanoid(),
+        status: 'pendiente',
       }
     })
     .filter(Boolean)
@@ -643,6 +738,8 @@ app.patch('/api/orders/:id', async (req, res, next) => {
           normalizedItems.push({
             productId,
             cantidad: quantity,
+            lineId: nanoid(),
+            status: 'pendiente',
           })
         })
 
@@ -752,46 +849,162 @@ app.post('/api/cashflow', async (req, res) => {
 })
 
 app.post('/api/orders/mark-delivered', async (req, res) => {
-  const { orderIds } = req.body
+  const deliveriesInput = Array.isArray(req.body.deliveries) ? req.body.deliveries : []
+  const legacyOrderIds = Array.isArray(req.body.orderIds) ? req.body.orderIds : []
 
-  if (!Array.isArray(orderIds) || orderIds.length === 0) {
-    res.status(400).json({ message: 'orderIds debe ser un arreglo con al menos un id' })
+  const sanitizedDeliveries = deliveriesInput
+    .map((delivery) => {
+      const orderId = typeof delivery?.orderId === 'string' ? delivery.orderId.trim() : ''
+      if (!orderId) {
+        return null
+      }
+
+      const lineIds = Array.isArray(delivery.lineIds)
+        ? Array.from(
+            new Set(
+              delivery.lineIds
+                .map((lineId) => (typeof lineId === 'string' ? lineId.trim() : ''))
+                .filter(Boolean),
+            ),
+          )
+        : null
+
+      return {
+        orderId,
+        lineIds: lineIds && lineIds.length > 0 ? lineIds : null,
+      }
+    })
+    .filter(Boolean)
+
+  legacyOrderIds.forEach((orderId) => {
+    if (typeof orderId === 'string' && orderId.trim()) {
+      sanitizedDeliveries.push({ orderId: orderId.trim(), lineIds: null })
+    }
+  })
+
+  if (!sanitizedDeliveries.length) {
+    res.status(400).json({ message: 'Debes seleccionar al menos un pedido o producto' })
     return
   }
 
-  const updatedOrders = []
+  const deliveriesByOrder = new Map()
+  sanitizedDeliveries.forEach(({ orderId, lineIds }) => {
+    if (!deliveriesByOrder.has(orderId)) {
+      deliveriesByOrder.set(orderId, { orderId, deliverAll: false, lineIds: new Set() })
+    }
+
+    const entry = deliveriesByOrder.get(orderId)
+    if (!lineIds || !lineIds.length) {
+      entry.deliverAll = true
+      entry.lineIds.clear()
+      return
+    }
+
+    if (entry.deliverAll) {
+      return
+    }
+
+    lineIds.forEach((lineId) => entry.lineIds.add(lineId))
+  })
+
+  const normalizedDeliveries = Array.from(deliveriesByOrder.values()).map((entry) => ({
+    orderId: entry.orderId,
+    lineIds: entry.deliverAll ? null : Array.from(entry.lineIds),
+  }))
+
+  const deliveredItems = []
+  const now = toISO()
 
   const data = await mutateData((draft) => {
-    orderIds.forEach((orderId) => {
+    const pricing = ensurePricingShape(draft)
+
+    normalizedDeliveries.forEach(({ orderId, lineIds }) => {
       const order = draft.orders.find((o) => o.id === orderId)
-      if (!order || order.estado === 'completado') {
+      if (!order) {
         return
       }
 
-      order.estado = 'completado'
-      order.deliveredAt = toISO()
-      updatedOrders.push(orderId)
+      const items = ensureOrderItemsStructure(order)
+      const targetLineIds = Array.isArray(lineIds) && lineIds.length ? new Set(lineIds) : null
 
-      const client = draft.clients.find((c) => c.id === order.clienteId)
-      const detailParts = []
-      if (client) {
-        detailParts.push(client.nombreCompleto)
-        if (client.comuna) {
-          detailParts.push(client.comuna)
+      const pendingItems = items.filter((item) => {
+        if (normalizeItemStatus(item.status) !== 'pendiente') {
+          return false
         }
-      }
-      detailParts.push(`Pedido ${order.id}`)
+        if (targetLineIds && !targetLineIds.has(item.lineId)) {
+          return false
+        }
+        return true
+      })
 
+      if (!pendingItems.length) {
+        return
+      }
+
+      const client = draft.clients.find((c) => c.id === order.clienteId) || null
+      const comuna = client?.comuna
+
+      pendingItems.forEach((item) => {
+        item.status = 'entregado'
+        const product = draft.products.find((p) => p.id === item.productId) || null
+        const fallbackPrice = product?.unitPrice || 0
+        const unitPrice = product
+          ? resolvePriceForComuna(
+              product.id,
+              comuna,
+              pricing.preciosPorComuna,
+              fallbackPrice,
+            )
+          : 0
+        const quantity = Number(item.cantidad) || 0
+        const subtotal = quantity * unitPrice
+
+        deliveredItems.push({
+          orderId: order.id,
+          lineId: item.lineId,
+          productId: item.productId,
+          productName: product?.name || 'Producto',
+          quantity,
+          unitPrice,
+          subtotal,
+          clientId: order.clienteId,
+        })
+      })
+
+      order.updatedAt = now
+      const newStatus = recalculateOrderStatus(order)
+      if (newStatus === 'completado') {
+        order.deliveredAt = now
+      } else if (newStatus === 'pendiente') {
+        order.deliveredAt = null
+      }
+
+      const deliveredCount = pendingItems.length
+      const clientName = client?.nombreCompleto || 'Cliente'
       ensureActivityLog(draft, {
-        title: `Pedido entregado: ${order.id}`,
-        detail: detailParts.join(' · '),
+        title: `Entrega registrada: ${order.id}`,
+        detail: `${clientName} · ${deliveredCount} producto${deliveredCount === 1 ? '' : 's'}`,
+        createdAt: now,
       })
     })
 
     return draft
   })
 
-  res.json({ updated: updatedOrders, ordersTotal: data.orders.length })
+  if (!deliveredItems.length) {
+    res.status(400).json({ message: 'No se encontraron productos pendientes para entregar' })
+    return
+  }
+
+  const totalAmount = deliveredItems.reduce((sum, item) => sum + (item.subtotal || 0), 0)
+  const updatedOrders = Array.from(new Set(deliveredItems.map((item) => item.orderId)))
+
+  res.json({
+    deliveredItems,
+    totalAmount,
+    updatedOrders,
+    ordersTotal: data.orders.length,
+  })
 })
 
 app.post('/api/orders/cancel', async (req, res) => {
@@ -809,7 +1022,7 @@ app.post('/api/orders/cancel', async (req, res) => {
     const remaining = []
 
     draft.orders.forEach((order) => {
-      if (!idsSet.has(order.id) || order.estado === 'completado') {
+      if (!idsSet.has(order.id) || order.estado === 'completado' || order.estado === 'deuda') {
         remaining.push(order)
         return
       }
@@ -848,10 +1061,341 @@ app.post('/api/orders/cancel', async (req, res) => {
   })
 })
 
+app.post('/api/debts', async (req, res, next) => {
+  const clientId = typeof req.body.clientId === 'string' ? req.body.clientId.trim() : ''
+  const orderIdsInput = Array.isArray(req.body.orderIds) ? req.body.orderIds : []
+  const rawSelections = Array.isArray(req.body.selections) ? req.body.selections : []
+  const note = typeof req.body.note === 'string' ? req.body.note.trim() : ''
+
+  const selections = rawSelections
+    .map((entry) => {
+      const orderId = typeof entry?.orderId === 'string' ? entry.orderId.trim() : ''
+      const lineIds = Array.isArray(entry?.lineIds)
+        ? Array.from(
+            new Set(
+              entry.lineIds
+                .filter((lineId) => typeof lineId === 'string')
+                .map((lineId) => lineId.trim())
+                .filter(Boolean),
+            ),
+          )
+        : []
+      if (!orderId || lineIds.length === 0) {
+        return null
+      }
+      return { orderId, lineIds }
+    })
+    .filter(Boolean)
+
+  const hasSelections = selections.length > 0
+
+  const orderIds = hasSelections
+    ? Array.from(new Set(selections.map((entry) => entry.orderId)))
+    : Array.from(
+        new Set(
+          orderIdsInput
+            .filter((orderId) => typeof orderId === 'string')
+            .map((orderId) => orderId.trim())
+            .filter(Boolean),
+        ),
+      )
+
+  if (!clientId) {
+    res.status(400).json({ message: 'clientId es requerido' })
+    return
+  }
+
+  if (orderIds.length === 0) {
+    res.status(400).json({ message: 'Indica al menos un pedido para crear la deuda' })
+    return
+  }
+
+  try {
+    let createdDebtId = null
+
+    const data = await mutateData((draft) => {
+      const pricing = ensurePricingShape(draft)
+      const client = draft.clients.find((c) => c.id === clientId)
+      if (!client) {
+        const error = new Error('Cliente no encontrado')
+        error.status = 404
+        throw error
+      }
+
+      const debts = ensureDebtsCollection(draft)
+      const aggregatedItems = new Map()
+      const targetOrders = []
+      const selectionMap = hasSelections
+        ? new Map(selections.map((entry) => [entry.orderId, new Set(entry.lineIds)]))
+        : null
+      let totalAmount = 0
+      const now = toISO()
+
+      orderIds.forEach((orderId) => {
+        const order = draft.orders.find((o) => o.id === orderId)
+        if (!order) {
+          const error = new Error(`Pedido no encontrado: ${orderId}`)
+          error.status = 400
+          throw error
+        }
+
+        if (order.clienteId !== clientId) {
+          const error = new Error('El pedido no pertenece al cliente indicado')
+          error.status = 400
+          throw error
+        }
+
+        if (order.estado !== 'pendiente') {
+          const error = new Error('Solo se pueden usar pedidos pendientes para crear una deuda')
+          error.status = 400
+          throw error
+        }
+
+        const allowedLineIds = hasSelections ? selectionMap.get(orderId) : null
+        let contributedItems = 0
+
+        ensureOrderItemsStructure(order).forEach((item) => {
+          if (normalizeItemStatus(item.status) !== 'pendiente') {
+            return
+          }
+
+          if (hasSelections && (!allowedLineIds || !allowedLineIds.has(item.lineId))) {
+            return
+          }
+
+          const product = draft.products.find((p) => p.id === item.productId)
+          if (!product) {
+            return
+          }
+
+          const quantity = Number(item.cantidad)
+          if (!Number.isFinite(quantity) || quantity <= 0) {
+            return
+          }
+
+          const unitPrice = resolvePriceForComuna(
+            product.id,
+            client.comuna,
+            pricing.preciosPorComuna,
+            product.unitPrice || 0,
+          )
+
+          const subtotal = quantity * unitPrice
+          const existing = aggregatedItems.get(product.id) || {
+            productId: product.id,
+            name: product.name,
+            unit: product.unit || 'Unidad',
+            unitPrice,
+            quantity: 0,
+            subtotal: 0,
+          }
+
+          existing.quantity += quantity
+          existing.subtotal += subtotal
+          aggregatedItems.set(product.id, existing)
+          totalAmount += subtotal
+          contributedItems += 1
+        })
+
+        if (hasSelections && contributedItems === 0) {
+          const error = new Error('Los productos seleccionados ya no están pendientes. Actualiza el listado e inténtalo nuevamente.')
+          error.status = 400
+          throw error
+        }
+
+        if (contributedItems > 0 || !hasSelections) {
+          targetOrders.push(order)
+        }
+      })
+
+      if (aggregatedItems.size === 0 || totalAmount <= 0) {
+        const error = new Error('No hay productos válidos para registrar como deuda')
+        error.status = 400
+        throw error
+      }
+
+      const debt = {
+        id: nanoid(),
+        clientId,
+        orderIds,
+        amount: totalAmount,
+        status: 'pendiente',
+        note,
+        items: Array.from(aggregatedItems.values()).map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          unit: item.unit,
+          unitPrice: item.unitPrice,
+          quantity: Number(item.quantity) || 0,
+          subtotal: Number(item.subtotal) || 0,
+        })),
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      debts.push(debt)
+
+      targetOrders.forEach((order) => {
+        const items = ensureOrderItemsStructure(order)
+        items.forEach((item) => {
+          if (normalizeItemStatus(item.status) !== 'pendiente') {
+            return
+          }
+          if (hasSelections) {
+            const allowedLineIds = selectionMap?.get(order.id)
+            if (!allowedLineIds || !allowedLineIds.has(item.lineId)) {
+              return
+            }
+          }
+          item.status = 'deuda'
+        })
+
+        recalculateOrderStatus(order)
+        order.debtId = debt.id
+        order.deliveredAt = order.deliveredAt || now
+        order.updatedAt = now
+      })
+
+      ensureActivityLog(draft, {
+        title: `Deuda creada: ${client.nombreCompleto}`,
+        detail: `${orderIds.length} pedidos · $${totalAmount.toLocaleString('es-CL')}`,
+        createdAt: now,
+      })
+
+      createdDebtId = debt.id
+      return draft
+    })
+
+    const debt = data.debts.find((item) => item.id === createdDebtId)
+    const client = data.clients.find((item) => item.id === clientId)
+
+    res.status(201).json({ debt: formatDebtForResponse(debt, client) })
+  } catch (error) {
+    next(error)
+  }
+})
+
+app.get('/api/debts', async (_req, res) => {
+  const data = await readData()
+  ensureDebtsCollection(data)
+
+  const debts = Array.isArray(data.debts) ? data.debts : []
+
+  const response = debts
+    .map((debt) => {
+      const client = data.clients.find((item) => item.id === debt.clientId)
+      return formatDebtForResponse(debt, client)
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (!a?.createdAt || !b?.createdAt) {
+        return 0
+      }
+      return b.createdAt.localeCompare(a.createdAt)
+    })
+
+  res.json({ debts: response, generatedAt: toISO() })
+})
+
+app.post('/api/debts/:id/pay', async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    let updatedDebt = null
+    let cashflowEntry = null
+    let clientForResponse = null
+
+    const data = await mutateData((draft) => {
+      const debts = ensureDebtsCollection(draft)
+      const debt = debts.find((entry) => entry.id === id)
+      if (!debt) {
+        const error = new Error('Deuda no encontrada')
+        error.status = 404
+        throw error
+      }
+
+      if ((debt.status || 'pendiente') === 'pagada') {
+        const error = new Error('La deuda ya está pagada')
+        error.status = 400
+        throw error
+      }
+
+      const now = toISO()
+      const amount = Number(debt.amount) || 0
+
+      clientForResponse = draft.clients.find((client) => client.id === debt.clientId) || null
+      const clientName = clientForResponse?.nombreCompleto || 'Cliente'
+
+      const cashflow = ensureCashflowCollection(draft)
+      cashflowEntry = {
+        id: nanoid(),
+        type: 'ingreso',
+        amount,
+        category: 'Cobranza',
+        description: `Pago deuda ${clientName}`,
+        date: now,
+        createdAt: now,
+      }
+      cashflow.push(cashflowEntry)
+
+      debt.status = 'pagada'
+      debt.paidAt = now
+      debt.updatedAt = now
+      debt.cashflowEntryId = cashflowEntry.id
+
+      if (!Array.isArray(debt.orderIds)) {
+        debt.orderIds = []
+      }
+
+      debt.orderIds.forEach((orderId) => {
+        const order = draft.orders.find((orderEntry) => orderEntry.id === orderId)
+        if (!order) {
+          return
+        }
+
+        ensureOrderItemsStructure(order).forEach((item) => {
+          if (item.status === 'deuda') {
+            item.status = 'entregado'
+          }
+        })
+
+        recalculateOrderStatus(order)
+        order.debtId = debt.id
+        order.deliveredAt = order.deliveredAt || now
+        order.updatedAt = now
+      })
+
+      ensureActivityLog(draft, {
+        title: `Deuda pagada: ${clientName}`,
+        detail: `$${amount.toLocaleString('es-CL')}`,
+        createdAt: now,
+      })
+
+      updatedDebt = debt
+      return draft
+    })
+
+    const summary = computeCashflowSummary(Array.isArray(data.cashflow) ? data.cashflow : [])
+    const formattedDebt = formatDebtForResponse(updatedDebt, clientForResponse)
+
+    res.json({
+      debt: formattedDebt,
+      cashflowEntry,
+      cashflowSummary: {
+        totalIncome: summary.totalIncome,
+        totalExpense: summary.totalExpense,
+        balance: summary.totalIncome - summary.totalExpense,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 app.get('/api/dashboard/pending-clients', async (_req, res) => {
   const data = await readData()
   const pricing = ensurePricingShape(data)
-  const pendingOrders = data.orders.filter((order) => order.estado !== 'completado')
+  const pendingOrders = data.orders.filter((order) => orderHasPendingItems(order))
 
   const clientsMap = new Map()
 
@@ -867,22 +1411,27 @@ app.get('/api/dashboard/pending-clients', async (_req, res) => {
       totalAmount: 0,
       orderIds: [],
       latestOrderAt: null,
+      orders: [],
     }
 
-    order.items.forEach((item) => {
+    const pendingOrderItems = []
+    ensureOrderItemsStructure(order).forEach((item) => {
+      if (normalizeItemStatus(item.status) !== 'pendiente') {
+        return
+      }
       const product = data.products.find((p) => p.id === item.productId)
       if (!product) {
         return
       }
 
-      const effectivePrice = resolvePriceForComuna(
+      const unitPrice = resolvePriceForComuna(
         product.id,
         client?.comuna,
         pricing.preciosPorComuna,
         product.unitPrice || 0,
       )
 
-      const itemSubtotal = item.cantidad * effectivePrice
+      const itemSubtotal = item.cantidad * unitPrice
 
       const productEntry = current.products.get(product.id) || {
         product,
@@ -895,7 +1444,29 @@ app.get('/api/dashboard/pending-clients', async (_req, res) => {
 
       current.products.set(product.id, productEntry)
       current.totalAmount += itemSubtotal
+
+      pendingOrderItems.push({
+        orderId: order.id,
+        lineId: item.lineId,
+        product: {
+          id: product.id,
+          name: product.name,
+          unit: product.unit || 'Unidad',
+          unitPrice,
+        },
+        quantity: item.cantidad,
+        subtotal: itemSubtotal,
+        createdAt: order.createdAt,
+      })
     })
+
+    if (pendingOrderItems.length > 0) {
+      current.orders.push({
+        orderId: order.id,
+        createdAt: order.createdAt,
+        items: pendingOrderItems,
+      })
+    }
 
     current.orderIds.push(order.id)
     if (!current.latestOrderAt || order.createdAt > current.latestOrderAt) {
@@ -935,6 +1506,7 @@ app.get('/api/dashboard/pending-clients', async (_req, res) => {
         orderIds: entry.orderIds,
         orderCount: entry.orderIds.length,
         latestOrderAt: entry.latestOrderAt,
+        orders: entry.orders,
       }
     })
     .filter((entry) => entry.client)
