@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { formatChileanPhone, sanitizeChileanPhoneDigits } from '../utils/phoneInput'
+import { getRegionOptions, formatRegionLabel, regionIncludesComuna } from '../utils/regions'
 
 const ALL_VALUE = 'ALL'
 
@@ -35,6 +36,7 @@ const UNIT_SYNONYMS = {
   lts: 'litro',
   l: 'litro',
 }
+
 
 const formatUnitLabel = (unit) => {
   if (typeof unit !== 'string') {
@@ -91,6 +93,8 @@ const PendingClientsPanel = ({
     ).sort(collator.compare)
   }, [clients, collator])
 
+  const availableRegions = useMemo(() => getRegionOptions(collator), [collator])
+
   const availableDias = useMemo(() => {
     return Array.from(
       new Set(
@@ -101,7 +105,7 @@ const PendingClientsPanel = ({
     ).sort(collator.compare)
   }, [clients, collator])
 
-  const [filters, setFilters] = useState({ comuna: ALL_VALUE, diaReparto: ALL_VALUE })
+  const [filters, setFilters] = useState({ region: ALL_VALUE, comuna: ALL_VALUE, diaReparto: ALL_VALUE })
 
   useEffect(() => {
     if (filters.comuna !== ALL_VALUE && !availableComunas.includes(filters.comuna)) {
@@ -115,17 +119,27 @@ const PendingClientsPanel = ({
     }
   }, [filters.diaReparto, availableDias])
 
+  useEffect(() => {
+    if (filters.region !== ALL_VALUE && !availableRegions.includes(filters.region)) {
+      setFilters((prev) => ({ ...prev, region: ALL_VALUE }))
+    }
+  }, [filters.region, availableRegions])
+
   const normalizedSearch = useMemo(() => normalizeText(searchTerm), [searchTerm])
   const phoneSearchDigits = useMemo(() => sanitizeChileanPhoneDigits(searchTerm), [searchTerm])
 
   const filteredClients = useMemo(() => {
     return clients.filter((entry) => {
-      const matchComuna =
-        filters.comuna === ALL_VALUE || entry.client.comuna === filters.comuna
+      const clientComuna = entry.client.comuna
+      const matchRegion =
+        filters.region === ALL_VALUE ||
+        entry.client?.region === filters.region ||
+        regionIncludesComuna(filters.region, clientComuna)
+      const matchComuna = filters.comuna === ALL_VALUE || clientComuna === filters.comuna
       const matchDia =
         filters.diaReparto === ALL_VALUE || entry.client.diaReparto === filters.diaReparto
 
-      if (!matchComuna || !matchDia) {
+      if (!matchRegion || !matchComuna || !matchDia) {
         return false
       }
 
@@ -196,7 +210,8 @@ const PendingClientsPanel = ({
     0,
   )
 
-  const filtersApplied = filters.comuna !== ALL_VALUE || filters.diaReparto !== ALL_VALUE
+  const filtersApplied =
+    filters.region !== ALL_VALUE || filters.comuna !== ALL_VALUE || filters.diaReparto !== ALL_VALUE
   const searchApplied = Boolean(normalizedSearch || phoneSearchDigits)
   const searchLabel = searchTerm.trim()
   const showContextTotal = filtersApplied || searchApplied
@@ -207,8 +222,13 @@ const PendingClientsPanel = ({
     setFilters((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
+  const handleRegionChange = (event) => {
+    const regionValue = event.target.value
+    setFilters((prev) => ({ ...prev, region: regionValue, comuna: ALL_VALUE }))
+  }
+
   const handleResetFilters = () => {
-    setFilters({ comuna: ALL_VALUE, diaReparto: ALL_VALUE })
+    setFilters({ region: ALL_VALUE, comuna: ALL_VALUE, diaReparto: ALL_VALUE })
   }
 
   const handleDelivered = (entry) => {
@@ -474,6 +494,17 @@ const PendingClientsPanel = ({
 
       <div className="pending-filters" role="group" aria-label="Filtros de clientes">
         <label>
+          <span>Filtrar por región</span>
+          <select value={filters.region} onChange={handleRegionChange}>
+            <option value={ALL_VALUE}>Todas</option>
+            {availableRegions.map((regionKey) => (
+              <option key={regionKey} value={regionKey}>
+                {formatRegionLabel(regionKey)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           <span>Filtrar por comuna</span>
           <select value={filters.comuna} onChange={handleFilterChange('comuna')}>
             <option value={ALL_VALUE}>Todas</option>
@@ -516,6 +547,7 @@ const PendingClientsPanel = ({
         {(filtersApplied || searchApplied) && (
           <p className="pending-filters-note">
             {[
+              filters.region === ALL_VALUE ? null : `Región: ${formatRegionLabel(filters.region)}`,
               filters.comuna === ALL_VALUE ? null : `Comuna: ${filters.comuna}`,
               filters.diaReparto === ALL_VALUE ? null : `Entrega: ${filters.diaReparto}`,
               searchApplied ? `Búsqueda: "${searchLabel}"` : null,

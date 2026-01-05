@@ -525,7 +525,7 @@ app.get('/api/clients', async (_req, res) => {
 })
 
 app.post('/api/clients', async (req, res) => {
-  const { nombreCompleto, telefono, direccion, comuna, diaReparto } = req.body
+  const { nombreCompleto, telefono, direccion, comuna, diaReparto, region } = req.body
 
   if (!nombreCompleto || !telefono || !direccion || !comuna) {
     res.status(400).json({ message: 'Campos requeridos: nombreCompleto, telefono, direccion, comuna' })
@@ -533,6 +533,7 @@ app.post('/api/clients', async (req, res) => {
   }
 
   const cleanedDay = typeof diaReparto === 'string' ? diaReparto.trim() : ''
+  const cleanedRegion = typeof region === 'string' ? region.trim() : ''
 
   const newClient = {
     id: nanoid(),
@@ -544,6 +545,10 @@ app.post('/api/clients', async (req, res) => {
 
   if (cleanedDay) {
     newClient.diaReparto = cleanedDay
+  }
+
+  if (cleanedRegion) {
+    newClient.region = cleanedRegion
   }
 
   const data = await mutateData((draft) => {
@@ -579,6 +584,11 @@ app.patch('/api/clients/:id', async (req, res, next) => {
   }
   if (Object.prototype.hasOwnProperty.call(updates, 'comuna')) {
     updates.comuna = sanitizeString(updates.comuna)
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updates, 'region')) {
+    const cleaned = sanitizeString(updates.region)
+    updates.region = cleaned || undefined
   }
 
   if (Object.prototype.hasOwnProperty.call(updates, 'diaReparto')) {

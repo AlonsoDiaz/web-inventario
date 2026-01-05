@@ -387,9 +387,13 @@ function App() {
       const sanitized = {
         ...payload,
         diaReparto: payload.diaReparto?.trim() || undefined,
+        region: payload.region?.trim() || undefined,
       }
       if (!sanitized.diaReparto) {
         delete sanitized.diaReparto
+      }
+      if (!sanitized.region) {
+        delete sanitized.region
       }
       await api.addClient(sanitized)
       resetForm?.()
@@ -494,7 +498,18 @@ function App() {
 
     try {
       setActionLoading(true)
-      await api.updateClient(clientId, updates)
+      const sanitized = {
+        ...updates,
+        region: updates.region?.trim() || undefined,
+        diaReparto: updates.diaReparto?.trim() || undefined,
+      }
+      if (!sanitized.region) {
+        delete sanitized.region
+      }
+      if (!sanitized.diaReparto) {
+        delete sanitized.diaReparto
+      }
+      await api.updateClient(clientId, sanitized)
       showToast('Cliente actualizado')
       await Promise.all([refreshClients(), refreshDashboard(), fetchPendingClients().catch(() => null)])
       closeModal()

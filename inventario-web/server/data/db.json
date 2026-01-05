@@ -135,7 +135,7 @@
       "nombreCompleto": "Jorge Fuentes",
       "telefono": "+56 9 7878 9090",
       "direccion": "Calle Sur 55",
-      "comuna": "San Miguel",
+      "comuna": "El Canelillo",
       "diaReparto": "Martes"
     },
     {
@@ -143,8 +143,9 @@
       "nombreCompleto": "Valentina Araya",
       "telefono": "+56 9 2222 3344",
       "direccion": "El Tranque 345",
-      "comuna": "Lo Barnechea",
-      "diaReparto": "Jueves"
+      "comuna": "Las Cruces",
+      "diaReparto": "Jueves",
+      "region": "ruta_costera"
     },
     {
       "id": "cli-roberto-008",
@@ -691,6 +692,18 @@
   },
   "activities": [
     {
+      "id": "qE4bTcv6w4blqzLH9AiGY",
+      "title": "Cliente actualizado: Valentina Araya",
+      "detail": "Las Cruces · +56 9 2222 3344",
+      "createdAt": "2026-01-05T22:29:54.561Z"
+    },
+    {
+      "id": "F3QX3JZ7m2vwA3dgh3Cem",
+      "title": "Cliente actualizado: Jorge Fuentes",
+      "detail": "El Canelillo · +56 9 7878 9090",
+      "createdAt": "2026-01-05T22:29:30.648Z"
+    },
+    {
       "id": "1aiafqhCnQihH_FR6F-oc",
       "title": "Ingreso registrado",
       "detail": "Ventas · $3.900",
@@ -857,44 +870,34 @@
       "title": "Deuda creada: Juanito",
       "detail": "1 pedidos · $7.800",
       "createdAt": "2026-01-05T13:27:13.268Z"
-    },
-    {
-      "id": "fAw-EoqCBtHAk1OqmgjJl",
-      "title": "Ingreso registrado",
-      "detail": "Ventas · $2.990",
-      "createdAt": "2026-01-05T13:27:06.688Z"
-    },
-    {
-      "id": "92cAuTULWQ_cPOGHaDYZl",
-      "title": "Entrega registrada: 3GeM-P_Q75f__AJY632Qr",
-      "detail": "Juanito · 1 producto",
-      "createdAt": "2026-01-05T13:27:06.670Z"
     }
   ],
   "settings": {
     "comunas": [
-      "Cerrillos",
-      "Estación Central",
-      "Huechuraba",
-      "Independencia",
-      "La Florida",
-      "La Reina",
-      "Las Condes",
-      "Lo Prado",
-      "Macul",
-      "Maipú",
-      "Melipilla",
-      "Peñalolén",
-      "Providencia",
-      "Puente Alto",
-      "Quilicura",
-      "Recoleta",
-      "Renca",
-      "San Joaquín",
-      "San Miguel",
-      "Santiago",
-      "Santiago Centro",
-      "Ñuñoa"
+      "Las Rocas de Santo Domingo",
+      "Santo Domingo",
+      "San Antonio",
+      "Barrancas",
+      "Llolleo",
+      "Tejas Verdes",
+      "Cartagena",
+      "San Sebastián",
+      "San Carlos",
+      "Las Cruces",
+      "El Tabo",
+      "El Tabito",
+      "Punta de Tralca",
+      "El Quisco Norte",
+      "El Quisco Sur",
+      "Isla Negra",
+      "Mirasol",
+      "Algarrobo Norte",
+      "Algarrobo Sur",
+      "El Canelo",
+      "El Canelillo",
+      "Algarrobo Oriente",
+      "Algarrobo",
+      "Tunquén"
     ],
     "diasReparto": [
       "Lunes",

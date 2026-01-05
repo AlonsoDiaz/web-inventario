@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { formatChileanPhone, parseChileanPhoneValue } from '../../utils/phoneInput'
+import { formatRegionLabel, getRegionOptions } from '../../utils/regions'
 
 const createInitialState = () => ({
   nombreCompleto: '',
@@ -8,6 +9,7 @@ const createInitialState = () => ({
   telefonoHasCountryCode: false,
   direccion: '',
   comuna: '',
+  region: '',
   diaReparto: '',
 })
 
@@ -16,6 +18,7 @@ const DEFAULT_DIAS_REPARTO = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Vierne
 const ClientForm = ({ comunas = [], diasReparto = [], onSubmit, submitting }) => {
   const [form, setForm] = useState(() => createInitialState())
   const optionsDias = diasReparto.length ? diasReparto : DEFAULT_DIAS_REPARTO
+  const regionOptions = useMemo(() => getRegionOptions(), [])
 
   const updateField = (field) => (event) => {
     let { value } = event.target
@@ -29,12 +32,17 @@ const ClientForm = ({ comunas = [], diasReparto = [], onSubmit, submitting }) =>
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    const { telefono, telefonoHasCountryCode, ...rest } = form
+    const { telefono, telefonoHasCountryCode, region, ...rest } = form
+    const trimmedRegion = region.trim()
     const payload = {
       ...rest,
+      region: trimmedRegion || undefined,
       telefono: formatChileanPhone(telefono, {
         includeCountryCode: telefonoHasCountryCode,
       }),
+    }
+    if (!payload.region) {
+      delete payload.region
     }
     onSubmit?.(payload, () => setForm(createInitialState()))
   }
@@ -82,6 +90,17 @@ const ClientForm = ({ comunas = [], diasReparto = [], onSubmit, submitting }) =>
           {comunas.map((comuna) => (
             <option key={comuna} value={comuna}>
               {comuna}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span>Región (opcional)</span>
+        <select value={form.region} onChange={updateField('region')}>
+          <option value="">Sin región</option>
+          {regionOptions.map((regionKey) => (
+            <option key={regionKey} value={regionKey}>
+              {formatRegionLabel(regionKey)}
             </option>
           ))}
         </select>

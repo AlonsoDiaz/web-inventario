@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { formatChileanPhone, parseChileanPhoneValue } from '../../utils/phoneInput'
+import { formatRegionLabel, getRegionOptions } from '../../utils/regions'
 
 const DEFAULT_DIAS_REPARTO = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
@@ -12,6 +13,7 @@ const toFormState = (client) => {
       telefonoHasCountryCode: false,
       direccion: '',
       comuna: '',
+      region: '',
       diaReparto: '',
     }
   }
@@ -23,6 +25,7 @@ const toFormState = (client) => {
     telefonoHasCountryCode: hasCountryCode,
     direccion: client.direccion ?? '',
     comuna: client.comuna ?? '',
+    region: client.region ?? '',
     diaReparto: client.diaReparto ?? '',
   }
 }
@@ -58,6 +61,8 @@ const ClientEditForm = ({
     [clients, selectedId],
   )
 
+  const regionOptions = useMemo(() => getRegionOptions(), [])
+
   useEffect(() => {
     setForm(toFormState(selectedClient))
   }, [selectedClient?.id])
@@ -82,12 +87,14 @@ const ClientEditForm = ({
       return
     }
 
-    const { telefono, telefonoHasCountryCode, ...rest } = form
+    const { telefono, telefonoHasCountryCode, region, ...rest } = form
+    const trimmedRegion = region.trim()
 
     onSubmit?.({
       clientId: selectedClient.id,
       updates: {
         ...rest,
+        region: trimmedRegion || undefined,
         telefono: formatChileanPhone(telefono, {
           includeCountryCode: telefonoHasCountryCode,
         }),
@@ -168,6 +175,17 @@ const ClientEditForm = ({
               {comunas.map((comuna) => (
                 <option key={comuna} value={comuna}>
                   {comuna}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Región (opcional)</span>
+            <select value={form.region} onChange={updateField('region')}>
+              <option value="">Sin región</option>
+              {regionOptions.map((regionKey) => (
+                <option key={regionKey} value={regionKey}>
+                  {formatRegionLabel(regionKey)}
                 </option>
               ))}
             </select>
