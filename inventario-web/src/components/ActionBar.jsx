@@ -3,8 +3,6 @@ const actions = [
   { key: 'create-product', label: 'Crear producto' },
   { key: 'new-order', label: 'Nuevo pedido' },
   { key: 'edit-product', label: 'Editar' },
-  { key: 'generate-report', label: 'Generar reporte' },
-  { key: 'view-summary', label: 'Ver resumen' },
   { key: 'view-client', label: 'Historial cliente' },
   { key: 'view-pending-clients', label: 'Pedidos pendientes' },
   { key: 'view-debts', label: 'Clientes con deuda' },

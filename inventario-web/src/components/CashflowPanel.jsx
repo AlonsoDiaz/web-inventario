@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { exportToExcel } from '../utils/export.js'
 
 const normalizeText = (value) => {
   if (value == null) {
@@ -79,6 +80,26 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
     })
   }, [transactions, normalizedSearch])
 
+  const exportColumns = [
+    { key: 'date', label: 'Fecha' },
+    { key: 'type', label: 'Tipo' },
+    { key: 'category', label: 'Categoría' },
+    { key: 'description', label: 'Descripción' },
+    { key: 'amount', label: 'Monto' },
+  ]
+
+  const exportRows = filteredTransactions.map((entry) => ({
+    date: formatDateTime(entry.date || entry.createdAt),
+    type: entry.type === 'ingreso' ? 'Ingreso' : 'Egreso',
+    category: entry.category || 'Sin categoría',
+    description: entry.description || '—',
+    amount: Number(entry.amount || 0),
+  }))
+
+  const handleExportExcel = () => {
+    exportToExcel('cashflow.xls', exportColumns, exportRows)
+  }
+
   return (
     <section className="panel cashflow-panel">
       <div className="cashflow-header">
@@ -88,9 +109,14 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
             <p className="cashflow-updated">Actualizado {formatDateTime(data.generatedAt)}</p>
           )}
         </div>
-        <button type="button" className="primary-button" onClick={onAddEntry}>
-          Registrar movimiento
-        </button>
+        <div className="panel-actions">
+          <button type="button" className="link-button" onClick={handleExportExcel}>
+            Exportar Excel
+          </button>
+          <button type="button" className="primary-button" onClick={onAddEntry}>
+            Registrar movimiento
+          </button>
+        </div>
       </div>
 
       <div className="cashflow-summary">

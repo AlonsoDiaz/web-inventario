@@ -54,7 +54,7 @@
     {
       "id": "RiOr06x5r2XGIqdH1-8-y",
       "clienteId": "GhdO6eh729fNUDUiM5R7T",
-      "estado": "deuda",
+      "estado": "completado",
       "createdAt": "2026-01-05T13:30:20.456Z",
       "deliveredAt": "2026-01-05T13:30:24.357Z",
       "items": [
@@ -62,11 +62,11 @@
           "productId": "f0-xYCrhOpbHPyZvsKVzg",
           "cantidad": 1,
           "lineId": "-hkM2UeN0ZaLoAYDlCUSd",
-          "status": "deuda"
+          "status": "entregado"
         }
       ],
       "debtId": "Dno9_92OHW3nuYfF9zA9Y",
-      "updatedAt": "2026-01-05T13:30:24.357Z"
+      "updatedAt": "2026-01-05T14:46:13.670Z"
     },
     {
       "id": "1z5ky-EYwgTg2rsapjNDa",
@@ -117,7 +117,7 @@
         "RiOr06x5r2XGIqdH1-8-y"
       ],
       "amount": 2990,
-      "status": "pendiente",
+      "status": "pagada",
       "note": "",
       "items": [
         {
@@ -130,7 +130,9 @@
         }
       ],
       "createdAt": "2026-01-05T13:30:24.357Z",
-      "updatedAt": "2026-01-05T13:30:24.357Z"
+      "updatedAt": "2026-01-05T14:46:13.670Z",
+      "paidAt": "2026-01-05T14:46:13.670Z",
+      "cashflowEntryId": "LwwEKM0OqJ7ugoaAwiK-G"
     }
   ],
   "cashflow": [
@@ -151,6 +153,15 @@
       "description": "Entrega a Juanito",
       "date": "2026-01-05T13:37:31.329Z",
       "createdAt": "2026-01-05T13:37:31.329Z"
+    },
+    {
+      "id": "LwwEKM0OqJ7ugoaAwiK-G",
+      "type": "ingreso",
+      "amount": 2990,
+      "category": "Cobranza",
+      "description": "Pago deuda Juanito",
+      "date": "2026-01-05T14:46:13.670Z",
+      "createdAt": "2026-01-05T14:46:13.670Z"
     }
   ],
   "pricing": {
@@ -158,6 +169,12 @@
     "preciosPorComuna": {}
   },
   "activities": [
+    {
+      "id": "Gvp-sLHHIdo0PxGehzxKH",
+      "title": "Deuda pagada: Juanito",
+      "detail": "$2.990",
+      "createdAt": "2026-01-05T14:46:13.670Z"
+    },
     {
       "id": "MjyLUlf9ro4oJDt71PBwh",
       "title": "Movimiento eliminado",

@@ -13,7 +13,6 @@ import OrderForm from './components/forms/OrderForm.jsx'
 import ProductEditForm from './components/forms/ProductEditForm.jsx'
 import PriceChangeForm from './components/forms/PriceChangeForm.jsx'
 import PriceOverrideForm from './components/forms/PriceOverrideForm.jsx'
-import SummaryPanel from './components/SummaryPanel.jsx'
 import ReportViewer from './components/ReportViewer.jsx'
 import ProductCreateForm from './components/forms/ProductCreateForm.jsx'
 import PendingClientsPanel from './components/PendingClientsPanel.jsx'
@@ -101,7 +100,7 @@ function App() {
   const [actionLoading, setActionLoading] = useState(false)
   const [toast, setToast] = useState(null)
   const [report, setReport] = useState(null)
-  const [summaryVisible, setSummaryVisible] = useState(false)
+  
   const [pendingClientsData, setPendingClientsData] = useState(null)
   const [pendingClientsLoading, setPendingClientsLoading] = useState(false)
   const [pendingClientsSubmitting, setPendingClientsSubmitting] = useState(false)
@@ -112,6 +111,7 @@ function App() {
   const [debtsLoading, setDebtsLoading] = useState(false)
   const [deliveryContext, setDeliveryContext] = useState(null)
   const [debtContext, setDebtContext] = useState(null)
+  const pendingClientsSectionRef = useRef(null)
   const [confirmDialog, setConfirmDialog] = useState(null)
   const confirmResolveRef = useRef(null)
   const normalizedSearchTerm = useMemo(() => normalizeText(searchTerm), [searchTerm])
@@ -338,17 +338,12 @@ function App() {
       case 'edit-product':
         setModal('choose-edit')
         break
-      case 'generate-report':
-        handleGenerateReport()
-        break
-      case 'view-summary':
-        setSummaryVisible((prev) => !prev)
-        break
       case 'view-client':
         setModal('view-client')
         break
       case 'view-pending-clients':
         handlePendingClientsRefresh()
+        scrollToPendingClients()
         break
       case 'view-debts':
         handleOpenDebtsModal()
@@ -638,10 +633,17 @@ function App() {
       setPendingClientsProcessingId(null)
       await Promise.all([fetchPendingClients(), handleDebtsRefresh()])
       showToast('Clientes con deuda actualizados')
+      scrollToPendingClients()
     } catch (err) {
       setError(err.message)
     } finally {
       setPendingClientsLoading(false)
+    }
+  }
+
+  const scrollToPendingClients = () => {
+    if (pendingClientsSectionRef.current) {
+      pendingClientsSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
@@ -921,24 +923,26 @@ function App() {
                 onAddEntry={() => setModal('cashflow-entry')}
                 onDeleteEntry={handleCashflowDelete}
               />
-              {pendingClientsLoading ? (
-                <div className="panel loading-panel">Calculando montos...</div>
-              ) : pendingClientsData?.clients?.length ? (
-                <PendingClientsPanel
-                  data={pendingClientsData}
-                  searchTerm={searchTerm}
-                  onMarkDelivered={handleMarkOrdersDelivered}
-                  onCancelOrders={handleCancelPendingOrders}
-                  onCreateDebt={handleCreateDebt}
-                  isUpdating={pendingClientsSubmitting}
-                  processingClientId={pendingClientsProcessingId}
-                />
-              ) : (
-                <div className="panel empty-panel">
-                  <h2>Sin pedidos pendientes</h2>
-                  <p>No hay productos por entregar en este momento.</p>
-                </div>
-              )}
+              <div ref={pendingClientsSectionRef}>
+                {pendingClientsLoading ? (
+                  <div className="panel loading-panel">Calculando montos...</div>
+                ) : pendingClientsData?.clients?.length ? (
+                  <PendingClientsPanel
+                    data={pendingClientsData}
+                    searchTerm={searchTerm}
+                    onMarkDelivered={handleMarkOrdersDelivered}
+                    onCancelOrders={handleCancelPendingOrders}
+                    onCreateDebt={handleCreateDebt}
+                    isUpdating={pendingClientsSubmitting}
+                    processingClientId={pendingClientsProcessingId}
+                  />
+                ) : (
+                  <div className="panel empty-panel">
+                    <h2>Sin pedidos pendientes</h2>
+                    <p>No hay productos por entregar en este momento.</p>
+                  </div>
+                )}
+              </div>
               <DebtsPanel
                 data={debts}
                 loading={debtsLoading}
@@ -971,15 +975,6 @@ function App() {
               {Array.isArray(dashboard.activities) ? dashboard.activities.length : 0}
             </span>
           </button>
-          {summaryVisible && (
-            <SummaryPanel
-              metrics={dashboard.metrics}
-              clients={clients}
-              orders={orders}
-              pricing={dashboard.pricing}
-              products={dashboard.products}
-            />
-          )}
         </aside>
       </main>
 

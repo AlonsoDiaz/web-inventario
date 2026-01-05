@@ -297,6 +297,14 @@ button:disabled {
   gap: 1rem;
 }
 
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .panel-header h2 {
   margin: 0;
   font-size: 1.4rem;
@@ -397,7 +405,10 @@ button:disabled {
   border: 1px solid var(--accent);
   color: #ffffff;
   font-weight: 600;
-  text-align: left;
+  text-align: center;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
   box-shadow: 0 12px 22px rgba(31, 111, 235, 0.18);
 }
 

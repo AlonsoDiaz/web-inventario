@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { formatChileanPhone } from '../utils/phoneInput'
+import { exportToExcel } from '../utils/export.js'
 
 const formatQuantity = (quantity) => {
   const parsed = Number(quantity)
@@ -33,6 +34,48 @@ const DebtsPanel = ({ data, loading = false, limit = null, onRefresh, onMarkPaid
     [outstandingDebts],
   )
 
+  const exportColumns = [
+    { key: 'client', label: 'Cliente' },
+    { key: 'comuna', label: 'Comuna' },
+    { key: 'phone', label: 'Contacto' },
+    { key: 'orders', label: 'Pedidos' },
+    { key: 'items', label: 'Productos' },
+    { key: 'amount', label: 'Total adeudado' },
+    { key: 'status', label: 'Estado' },
+    { key: 'createdAt', label: 'Creado' },
+    { key: 'note', label: 'Nota' },
+  ]
+
+  const exportRows = outstandingDebts.map((debt) => {
+    const clientName = debt.client?.nombreCompleto || 'Cliente'
+    const comuna = debt.client?.comuna || ''
+    const phone = formatChileanPhone(debt.client?.telefono) || debt.client?.telefono || '—'
+    const items = Array.isArray(debt.items)
+      ? debt.items
+          .map((item) => `${item.name || 'Producto'} x${formatQuantity(item.quantity)} (${item.unit || 'unidad'})`)
+          .join(' | ')
+      : '—'
+    const orders = Array.isArray(debt.orderIds) ? debt.orderIds.length : 0
+    const status = (debt.status || 'pendiente').toLowerCase() === 'pagada' ? 'Pagada' : 'Pendiente'
+    const createdAt = debt.createdAt ? new Date(debt.createdAt).toLocaleDateString('es-CL') : '—'
+
+    return {
+      client: clientName,
+      comuna,
+      phone,
+      orders,
+      items,
+      amount: Number(debt.amount || 0),
+      status,
+      createdAt,
+      note: debt.note || '',
+    }
+  })
+
+  const handleExportExcel = () => {
+    exportToExcel('deudas.xls', exportColumns, exportRows)
+  }
+
   return (
     <section className="panel" aria-label="Deudores">
       <header className="panel-header">
@@ -40,16 +83,21 @@ const DebtsPanel = ({ data, loading = false, limit = null, onRefresh, onMarkPaid
           <h2>Deudores</h2>
           <p>Clientes con deudas registradas y sus productos.</p>
         </div>
-        {onRefresh && (
-          <button
-            type="button"
-            className="chip-button"
-            onClick={() => onRefresh()}
-            disabled={loading}
-          >
-            {loading ? 'Actualizando...' : 'Actualizar'}
+        <div className="panel-actions">
+          {onRefresh && (
+            <button
+              type="button"
+              className="chip-button"
+              onClick={() => onRefresh()}
+              disabled={loading}
+            >
+              {loading ? 'Actualizando...' : 'Actualizar'}
+            </button>
+          )}
+          <button type="button" className="link-button" onClick={handleExportExcel}>
+            Exportar Excel
           </button>
-        )}
+        </div>
       </header>
 
       {loading ? (
