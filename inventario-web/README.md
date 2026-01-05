@@ -1,16 +1,29 @@
-# React + Vite
+# Inventario Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Panel completo para gestionar productos, clientes, pedidos, deudas y flujo de caja.
 
-Currently, two official plugins are available:
+## Funcionalidades principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Productos: crear, editar, actualizar precios y gestionar precios personalizados por comuna.
+- Clientes: alta/edición, contacto formateado, búsqueda y resumen de historial.
+- Pedidos: crear pedidos con múltiples ítems, editar/cancelar, marcar entregas parciales o completas, registrar ventas en caja al entregar.
+- Deudas: crear deudas desde pedidos pendientes, registrar pagos (crea ingreso en cashflow), ver deudores y montos, exportar a Excel.
+- Cashflow: registrar ingresos/egresos, eliminar movimientos, ver totales y exportar a Excel.
+- Pendientes: panel de pedidos pendientes por cliente, con selección de productos a entregar o pasar a deuda.
+- Inventario y métricas: KPIs de inventario, clientes activos, pedidos pendientes; visor de reportes (opcional si está habilitado en servidor).
+- Actividad: panel con actividad reciente.
+- Exports: exportar cashflow y deudas a Excel (HTML/XLS compatible).
+- Arranque rápido: script `start-app.bat` para levantar frontend y backend juntos.
 
-## React Compiler
+## Cómo ejecutar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. `npm install` en la raíz y en `server/` si no están las dependencias.
+2. Backend: `cd server && npm run dev` (o usa `npm run dev:all` desde la raíz si está definido).
+3. Frontend: `npm run dev` en la raíz.
+4. Abrir `http://localhost:5173`.
 
-## Expanding the ESLint configuration
+## Estructura
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/`: frontend React (Vite).
+- `server/`: API Express con almacenamiento en `server/data/db.json`.
+- `start-app.bat`: arranca frontend y backend en paralelo y abre el navegador.
