@@ -37,7 +37,7 @@ const formatDateTime = (value) => {
   })
 }
 
-const CashflowPanel = ({ data, loading, searchTerm, onAddEntry }) => {
+const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry }) => {
   const transactions = Array.isArray(data?.transactions) ? data.transactions : []
   const summary = data?.summary || { totalIncome: 0, totalExpense: 0, balance: 0 }
 
@@ -124,6 +124,7 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry }) => {
                 <th>Categoría</th>
                 <th>Descripción</th>
                 <th className="cashflow-amount">Monto</th>
+                <th className="cashflow-actions">Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -144,6 +145,15 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry }) => {
                   <td className={`cashflow-amount ${entry.type === 'ingreso' ? 'is-income' : 'is-expense'}`}>
                     {entry.type === 'ingreso' ? '+' : '-'}
                     {formatCurrency(entry.amount)}
+                  </td>
+                  <td className="cashflow-actions">
+                    <button
+                      type="button"
+                      className="link-button danger-ghost"
+                      onClick={() => onDeleteEntry?.(entry)}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}

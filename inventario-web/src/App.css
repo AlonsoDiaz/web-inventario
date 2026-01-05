@@ -247,6 +247,17 @@ button:disabled {
   color: var(--accent-strong);
 }
 
+.link-button.danger-ghost {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.link-button.danger-ghost:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
@@ -853,6 +864,11 @@ tbody tr[data-selected='true'] {
 
 .cashflow-table .is-expense {
   color: var(--danger);
+}
+
+.cashflow-actions {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .cashflow-empty {

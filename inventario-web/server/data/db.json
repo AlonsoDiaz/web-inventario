@@ -144,15 +144,6 @@
       "createdAt": "2026-01-05T13:27:06.687Z"
     },
     {
-      "id": "4_qDNhxwtHj2LNoslaoFy",
-      "type": "ingreso",
-      "amount": 7800,
-      "category": "Cobranza",
-      "description": "Pago deuda Juanito",
-      "date": "2026-01-05T13:32:55.789Z",
-      "createdAt": "2026-01-05T13:32:55.789Z"
-    },
-    {
       "id": "Ss51STjFuB3o_Av-paBUb",
       "type": "ingreso",
       "amount": 3900,
@@ -167,6 +158,12 @@
     "preciosPorComuna": {}
   },
   "activities": [
+    {
+      "id": "MjyLUlf9ro4oJDt71PBwh",
+      "title": "Movimiento eliminado",
+      "detail": "Cobranza · $7.800",
+      "createdAt": "2026-01-05T14:30:36.375Z"
+    },
     {
       "id": "JSTRDO-dF2PbWJGQ8Hqs5",
       "title": "Ingreso registrado",

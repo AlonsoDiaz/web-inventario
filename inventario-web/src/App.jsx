@@ -586,6 +586,39 @@ function App() {
     }
   }
 
+  const handleCashflowDelete = async (entry) => {
+    if (!entry || !entry.id) {
+      showToast('Movimiento no disponible')
+      return
+    }
+
+    const amount = Number(entry.amount || 0)
+    const confirmed = await openConfirmDialog({
+      title: 'Eliminar movimiento',
+      message: 'Esta acción quitará el ingreso o egreso del registro.',
+      detail: entry.description || entry.category || 'Sin detalle',
+      highlight: amount > 0 ? `$${amount.toLocaleString('es-CL')}` : null,
+      confirmLabel: 'Eliminar',
+      cancelLabel: 'Conservar',
+      tone: 'danger',
+    })
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setCashflowLoading(true)
+      setError(null)
+      await api.deleteCashflowEntry(entry.id)
+      showToast('Movimiento eliminado')
+      await fetchCashflow().catch(() => null)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setCashflowLoading(false)
+    }
+  }
+
   const handleGenerateReport = async () => {
     try {
       setActionLoading(true)
@@ -886,6 +919,7 @@ function App() {
                 loading={cashflowLoading}
                 searchTerm={searchTerm}
                 onAddEntry={() => setModal('cashflow-entry')}
+                onDeleteEntry={handleCashflowDelete}
               />
               {pendingClientsLoading ? (
                 <div className="panel loading-panel">Calculando montos...</div>

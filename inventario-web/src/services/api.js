@@ -147,4 +147,9 @@ export const api = {
       body: JSON.stringify(payload),
     })
   },
+  async deleteCashflowEntry(entryId) {
+    return request(`/api/cashflow/${entryId}`, {
+      method: 'DELETE',
+    })
+  },
 }

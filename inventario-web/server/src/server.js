@@ -848,6 +848,42 @@ app.post('/api/cashflow', async (req, res) => {
   })
 })
 
+app.delete('/api/cashflow/:id', async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    const data = await mutateData((draft) => {
+      const cashflow = ensureCashflowCollection(draft)
+      const index = cashflow.findIndex((entry) => entry.id === id)
+      if (index === -1) {
+        const error = new Error('Movimiento no encontrado')
+        error.status = 404
+        throw error
+      }
+
+      const [removed] = cashflow.splice(index, 1)
+      const amount = Number(removed?.amount || 0)
+      ensureActivityLog(draft, {
+        title: 'Movimiento eliminado',
+        detail: `${removed?.category || 'Sin categoría'} · $${amount.toLocaleString('es-CL')}`,
+      })
+      return draft
+    })
+
+    const summary = computeCashflowSummary(Array.isArray(data.cashflow) ? data.cashflow : [])
+
+    res.json({
+      summary: {
+        totalIncome: summary.totalIncome,
+        totalExpense: summary.totalExpense,
+        balance: summary.totalIncome - summary.totalExpense,
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 app.post('/api/orders/mark-delivered', async (req, res) => {
   const deliveriesInput = Array.isArray(req.body.deliveries) ? req.body.deliveries : []
   const legacyOrderIds = Array.isArray(req.body.orderIds) ? req.body.orderIds : []
