@@ -1024,6 +1024,10 @@ function App() {
         </aside>
       </main>
 
+      <footer className="app-footer" aria-label="Créditos del sitio">
+        <span>Desarrollado por <strong>Alonsillo =D</strong></span>
+      </footer>
+
       {modal === 'add-client' && (
         <Modal title="Agregar cliente" onClose={closeModal}>
           <ClientForm

@@ -103,8 +103,9 @@
       "nombreCompleto": "Carlos Soto",
       "telefono": "+56 9 5555 1212",
       "direccion": "Av. Central 456",
-      "comuna": "Ñuñoa",
-      "diaReparto": "Jueves"
+      "comuna": "El Quisco Sur",
+      "diaReparto": "Jueves",
+      "region": "ruta_costera"
     },
     {
       "id": "cli-ana-003",
@@ -437,27 +438,6 @@
       "updatedAt": "2026-01-06T12:20:00.000Z"
     },
     {
-      "id": "ord-vale-007",
-      "clienteId": "cli-vale-007",
-      "estado": "pendiente",
-      "createdAt": "2026-01-06T12:30:00.000Z",
-      "items": [
-        {
-          "productId": "prod-leche-004",
-          "cantidad": 2,
-          "lineId": "line-vale-leche",
-          "status": "pendiente"
-        },
-        {
-          "productId": "prod-queso-007",
-          "cantidad": 1,
-          "lineId": "line-vale-queso",
-          "status": "pendiente"
-        }
-      ],
-      "updatedAt": "2026-01-06T12:30:00.000Z"
-    },
-    {
       "id": "ord-roberto-008",
       "clienteId": "cli-roberto-008",
       "estado": "completado",
@@ -480,25 +460,39 @@
       "updatedAt": "2026-01-06T13:10:00.000Z"
     },
     {
-      "id": "ord-andrea-009",
-      "clienteId": "cli-andrea-009",
-      "estado": "pendiente",
-      "createdAt": "2026-01-06T14:00:00.000Z",
+      "id": "3E8iv88oD3w71RGUxX6da",
+      "clienteId": "cli-carlos-002",
+      "estado": "completado",
+      "createdAt": "2026-01-06T01:43:52.262Z",
+      "deliveredAt": "2026-01-06T01:46:11.622Z",
       "items": [
+        {
+          "productId": "prod-naranjas-002",
+          "cantidad": 1,
+          "lineId": "F1_CEk_rocjwLUjyzj4-L",
+          "status": "entregado"
+        },
+        {
+          "productId": "prod-queso-007",
+          "cantidad": 1,
+          "lineId": "DDp2eijtY-FKTzZSzDDs9",
+          "status": "entregado"
+        },
         {
           "productId": "prod-huevo-006",
           "cantidad": 1,
-          "lineId": "line-andrea-huevo",
-          "status": "pendiente"
+          "lineId": "C7T6Twvt59vATt3I88Kk3",
+          "status": "entregado"
         },
         {
           "productId": "prod-arroz-008",
-          "cantidad": 4,
-          "lineId": "line-andrea-arroz",
-          "status": "pendiente"
+          "cantidad": 1,
+          "lineId": "Do3dEgMPLGqK3cMP0PqUR",
+          "status": "entregado"
         }
       ],
-      "updatedAt": "2026-01-06T14:00:00.000Z"
+      "updatedAt": "2026-01-06T01:46:40.234Z",
+      "debtId": "LL8udgx2YEYDQ3yocZGWv"
     }
   ],
   "debts": [
@@ -597,6 +591,62 @@
       "updatedAt": "2026-01-05T15:12:39.097Z",
       "paidAt": "2026-01-05T15:12:39.097Z",
       "cashflowEntryId": "UdV5uOvapTNGjVwsbu5FR"
+    },
+    {
+      "id": "ZRti093rjlCuFPIacHFGp",
+      "clientId": "cli-vale-007",
+      "orderIds": [
+        "ord-vale-007"
+      ],
+      "amount": 5200,
+      "status": "pagada",
+      "note": "",
+      "items": [
+        {
+          "productId": "prod-queso-007",
+          "name": "Queso mantecoso",
+          "unit": "Kg",
+          "unitPrice": 5200,
+          "quantity": 1,
+          "subtotal": 5200
+        }
+      ],
+      "createdAt": "2026-01-05T22:31:10.217Z",
+      "updatedAt": "2026-01-05T22:31:15.729Z",
+      "paidAt": "2026-01-05T22:31:15.729Z",
+      "cashflowEntryId": "6Evkja9YDxpXSCQIUfpVa"
+    },
+    {
+      "id": "LL8udgx2YEYDQ3yocZGWv",
+      "clientId": "cli-carlos-002",
+      "orderIds": [
+        "3E8iv88oD3w71RGUxX6da"
+      ],
+      "amount": 4300,
+      "status": "pagada",
+      "note": "",
+      "items": [
+        {
+          "productId": "prod-huevo-006",
+          "name": "Huevos camperos",
+          "unit": "Maple",
+          "unitPrice": 3200,
+          "quantity": 1,
+          "subtotal": 3200
+        },
+        {
+          "productId": "prod-arroz-008",
+          "name": "Arroz grano largo",
+          "unit": "Bolsa",
+          "unitPrice": 1100,
+          "quantity": 1,
+          "subtotal": 1100
+        }
+      ],
+      "createdAt": "2026-01-06T01:46:11.622Z",
+      "updatedAt": "2026-01-06T01:46:40.234Z",
+      "paidAt": "2026-01-06T01:46:40.234Z",
+      "cashflowEntryId": "SkK1qSOcMUHdH6w5aa3Uu"
     }
   ],
   "cashflow": [
@@ -666,24 +716,24 @@
       "paymentMethod": "efectivo"
     },
     {
-      "id": "UdV5uOvapTNGjVwsbu5FR",
+      "id": "6Evkja9YDxpXSCQIUfpVa",
       "type": "ingreso",
-      "amount": 3900,
+      "amount": 5200,
       "category": "Cobranza",
-      "description": "Pago deuda Juanito",
-      "date": "2026-01-05T15:12:39.097Z",
-      "createdAt": "2026-01-05T15:12:39.097Z",
-      "paymentMethod": "efectivo"
+      "description": "Pago deuda Valentina Araya",
+      "date": "2026-01-05T22:31:15.729Z",
+      "createdAt": "2026-01-05T22:31:15.729Z",
+      "paymentMethod": "transferencia"
     },
     {
-      "id": "CUHxuq9JT2aZIuZ385Y0o",
+      "id": "yodkg0EMhUnhdyb2P3Nh2",
       "type": "ingreso",
-      "amount": 3900,
+      "amount": 7000,
       "category": "Ventas",
-      "description": "Entrega a Juanito",
-      "date": "2026-01-05T15:14:28.386Z",
-      "createdAt": "2026-01-05T15:14:28.386Z",
-      "paymentMethod": "transferencia"
+      "description": "Entrega a Carlos Soto",
+      "date": "2026-01-06T01:45:50.257Z",
+      "createdAt": "2026-01-06T01:45:50.257Z",
+      "paymentMethod": "efectivo"
     }
   ],
   "pricing": {
@@ -691,6 +741,90 @@
     "preciosPorComuna": {}
   },
   "activities": [
+    {
+      "id": "BL6o8lpNMMFLyh26RNj2Q",
+      "title": "Pedido cancelado: ord-andrea-009",
+      "detail": "Andrea Campos · Providencia · Pedido ord-andrea-009",
+      "createdAt": "2026-01-06T01:50:44.219Z"
+    },
+    {
+      "id": "q6ySqYkRMisbneZXtyDSq",
+      "title": "Movimiento eliminado",
+      "detail": "Cobranza · $4.300",
+      "createdAt": "2026-01-06T01:47:20.988Z"
+    },
+    {
+      "id": "hQS9Qoj_SpSz07mm5Xpcq",
+      "title": "Deuda pagada: Carlos Soto",
+      "detail": "$4.300",
+      "createdAt": "2026-01-06T01:46:40.234Z"
+    },
+    {
+      "id": "bJ-kxde04SkmH85Y_IErK",
+      "title": "Deuda creada: Carlos Soto",
+      "detail": "1 pedidos · $4.300",
+      "createdAt": "2026-01-06T01:46:11.622Z"
+    },
+    {
+      "id": "f-aADvXUivsea_1pz4Ocu",
+      "title": "Ingreso registrado",
+      "detail": "Ventas · $7.000",
+      "createdAt": "2026-01-06T01:45:50.270Z"
+    },
+    {
+      "id": "IxkAXWkaDOdAlceIP9j7P",
+      "title": "Entrega registrada: 3E8iv88oD3w71RGUxX6da",
+      "detail": "Carlos Soto · 2 productos",
+      "createdAt": "2026-01-06T01:45:46.094Z"
+    },
+    {
+      "id": "L3ZYY4xpsesILai2XGWXE",
+      "title": "Cliente actualizado: Carlos Soto",
+      "detail": "El Quisco Sur · +56 9 5555 1212",
+      "createdAt": "2026-01-06T01:44:55.841Z"
+    },
+    {
+      "id": "MGyeYH860PAOpHaTPvU4l",
+      "title": "Cliente actualizado: Carlos Soto",
+      "detail": "El Tabo · +56 9 5555 1212",
+      "createdAt": "2026-01-06T01:44:34.503Z"
+    },
+    {
+      "id": "1lBLskzjXbp272GSzue0V",
+      "title": "Pedido creado: 3E8iv88oD3w71RGUxX6da",
+      "detail": "Carlos Soto · 4 ítems",
+      "createdAt": "2026-01-06T01:43:52.263Z"
+    },
+    {
+      "id": "ENldlrtiYMrV8GMlaABUc",
+      "title": "Pedido cancelado: ord-vale-007",
+      "detail": "Valentina Araya · Las Cruces · Pedido ord-vale-007",
+      "createdAt": "2026-01-05T22:31:30.047Z"
+    },
+    {
+      "id": "oUMXdqU_2eOIC_mZNlsgv",
+      "title": "Movimiento eliminado",
+      "detail": "Cobranza · $3.900",
+      "createdAt": "2026-01-05T22:31:21.301Z"
+    },
+    {
+      "id": "_rxUQeBVAhWOIzQ3nMTUG",
+      "title": "Movimiento eliminado",
+      "detail": "Ventas · $3.900",
+      "createdAt": "2026-01-05T22:31:20.023Z"
+    },
+    {
+      "id": "08w6wvilNLzEB2oRE9kwL",
+      "title": "Deuda pagada: Valentina Araya",
+      "detail": "$5.200",
+      "createdAt": "2026-01-05T22:31:15.729Z"
+    },
+    {
+      "id": "2fKgmGuHdxmWBedzqHF8u",
+      "title": "Deuda creada: Valentina Araya",
+      "detail": "1 pedidos · $5.200",
+      "createdAt": "2026-01-05T22:31:10.217Z"
+    },
     {
       "id": "qE4bTcv6w4blqzLH9AiGY",
       "title": "Cliente actualizado: Valentina Araya",
@@ -786,90 +920,6 @@
       "title": "Pedido creado: Dpaa2_WP9d3w3qLO-11dc",
       "detail": "Juanito · 1 ítems",
       "createdAt": "2026-01-05T15:06:54.498Z"
-    },
-    {
-      "id": "b_6Vam-zS9D6Cn_uiXRcU",
-      "title": "Deuda pagada: Juanito",
-      "detail": "$2.990",
-      "createdAt": "2026-01-05T15:00:27.918Z"
-    },
-    {
-      "id": "lmgNnmTs0Q5feNEt2sBsc",
-      "title": "Ingreso registrado",
-      "detail": "Ventas · $3.900",
-      "createdAt": "2026-01-05T15:00:02.323Z"
-    },
-    {
-      "id": "XA8M05CXvdiq6qWyD3mBS",
-      "title": "Entrega registrada: 0BnCUZ5lcyxBzkYaHC3mQ",
-      "detail": "Juanito · 1 producto",
-      "createdAt": "2026-01-05T15:00:02.300Z"
-    },
-    {
-      "id": "KCWgarGUQ4dG3pmId_suj",
-      "title": "Deuda creada: Juanito",
-      "detail": "1 pedidos · $2.990",
-      "createdAt": "2026-01-05T14:59:59.329Z"
-    },
-    {
-      "id": "-1rQgtHa9ucPKAQPLGPNq",
-      "title": "Pedido creado: 0BnCUZ5lcyxBzkYaHC3mQ",
-      "detail": "Juanito · 2 ítems",
-      "createdAt": "2026-01-05T14:59:38.151Z"
-    },
-    {
-      "id": "Gvp-sLHHIdo0PxGehzxKH",
-      "title": "Deuda pagada: Juanito",
-      "detail": "$2.990",
-      "createdAt": "2026-01-05T14:46:13.670Z"
-    },
-    {
-      "id": "MjyLUlf9ro4oJDt71PBwh",
-      "title": "Movimiento eliminado",
-      "detail": "Cobranza · $7.800",
-      "createdAt": "2026-01-05T14:30:36.375Z"
-    },
-    {
-      "id": "JSTRDO-dF2PbWJGQ8Hqs5",
-      "title": "Ingreso registrado",
-      "detail": "Ventas · $3.900",
-      "createdAt": "2026-01-05T13:37:31.342Z"
-    },
-    {
-      "id": "xz76tPwQaAGWbFCuxJGem",
-      "title": "Entrega registrada: 1z5ky-EYwgTg2rsapjNDa",
-      "detail": "Juanito · 1 producto",
-      "createdAt": "2026-01-05T13:37:31.308Z"
-    },
-    {
-      "id": "g5_XeAyrBPvVRCNk6IfRP",
-      "title": "Pedido creado: 1z5ky-EYwgTg2rsapjNDa",
-      "detail": "Juanito · 1 ítems",
-      "createdAt": "2026-01-05T13:35:59.031Z"
-    },
-    {
-      "id": "pTVfgIa2LS3DcTH0KrUXq",
-      "title": "Deuda pagada: Juanito",
-      "detail": "$7.800",
-      "createdAt": "2026-01-05T13:32:55.789Z"
-    },
-    {
-      "id": "OMRSuqjI8U5HMXR2eCOGQ",
-      "title": "Deuda creada: Juanito",
-      "detail": "1 pedidos · $2.990",
-      "createdAt": "2026-01-05T13:30:24.357Z"
-    },
-    {
-      "id": "HGbOWLmS61c80p61wLkNd",
-      "title": "Pedido creado: RiOr06x5r2XGIqdH1-8-y",
-      "detail": "Juanito · 1 ítems",
-      "createdAt": "2026-01-05T13:30:20.457Z"
-    },
-    {
-      "id": "9abRsyue7Oyw2zteXmmjF",
-      "title": "Deuda creada: Juanito",
-      "detail": "1 pedidos · $7.800",
-      "createdAt": "2026-01-05T13:27:13.268Z"
     }
   ],
   "settings": {

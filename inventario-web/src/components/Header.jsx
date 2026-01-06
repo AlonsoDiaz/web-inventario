@@ -6,7 +6,7 @@ const Header = ({ onSearch, searchTerm = '', totalClients, onNewProduct }) => {
   return (
     <header className="topbar">
       <div className="brand">
-        <h1>Control de Reparto</h1>
+        <h1>Control de Reparto | Ducks Company SPA</h1>
         <p>
           Monitor de pedidos, compras y precios en un solo lugar
           {typeof totalClients === 'number' ? ` · ${totalClients} clientes` : ''}.

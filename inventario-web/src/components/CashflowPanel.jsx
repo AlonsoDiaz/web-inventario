@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { exportToExcel } from '../utils/export.js'
 
 const normalizeText = (value) => {
@@ -46,45 +46,97 @@ const formatDateTime = (value) => {
 
 const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry }) => {
   const transactions = Array.isArray(data?.transactions) ? data.transactions : []
-  const summary = data?.summary || { totalIncome: 0, totalExpense: 0, balance: 0 }
+  const baseSummary = {
+    totalIncome: Number(data?.summary?.totalIncome || 0),
+    totalExpense: Number(data?.summary?.totalExpense || 0),
+    balance: Number(data?.summary?.balance || 0),
+    cash: Number(data?.summary?.cash || 0),
+    bank: Number(data?.summary?.bank || 0),
+  }
+
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
 
   const normalizedSearch = useMemo(() => normalizeText(searchTerm), [searchTerm])
 
   const filteredTransactions = useMemo(() => {
-    const toTimestamp = (value) => {
+    const toTimestamp = (value, fallback = null) => {
       if (!value) {
-        return Number.NEGATIVE_INFINITY
+        return fallback
       }
       const date = new Date(value)
       const time = date.getTime()
-      return Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY
+      return Number.isFinite(time) ? time : fallback
     }
 
-    const matches = normalizedSearch
-      ? transactions.filter((entry) => {
-          const haystack = normalizeText(
-            `${entry.type || ''} ${entry.category || ''} ${entry.description || ''}`,
-          )
-          return haystack.includes(normalizedSearch)
-        })
-      : transactions
+    const fromTs = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null
+    const toTs = dateTo ? new Date(`${dateTo}T23:59:59.999`).getTime() : null
+
+    const matches = transactions.filter((entry) => {
+      const haystack = normalizeText(
+        `${entry.type || ''} ${entry.category || ''} ${entry.description || ''}`,
+      )
+      if (normalizedSearch && !haystack.includes(normalizedSearch)) {
+        return false
+      }
+
+      const entryTs = toTimestamp(entry.date || entry.createdAt)
+      if (entryTs == null) {
+        return false
+      }
+      if (fromTs != null && entryTs < fromTs) {
+        return false
+      }
+      if (toTs != null && entryTs > toTs) {
+        return false
+      }
+
+      return true
+    })
 
     return [...matches].sort((a, b) => {
-      const dateA = toTimestamp(a.date)
-      const dateB = toTimestamp(b.date)
+      const dateA = toTimestamp(a.date, Number.NEGATIVE_INFINITY)
+      const dateB = toTimestamp(b.date, Number.NEGATIVE_INFINITY)
       if (dateA !== dateB) {
         return dateB - dateA
       }
 
-      const createdA = toTimestamp(a.createdAt)
-      const createdB = toTimestamp(b.createdAt)
+      const createdA = toTimestamp(a.createdAt, Number.NEGATIVE_INFINITY)
+      const createdB = toTimestamp(b.createdAt, Number.NEGATIVE_INFINITY)
       if (createdA !== createdB) {
         return createdB - createdA
       }
 
       return 0
     })
-  }, [transactions, normalizedSearch])
+  }, [transactions, normalizedSearch, dateFrom, dateTo])
+
+  const filteredSummary = useMemo(() => {
+    const totals = filteredTransactions.reduce(
+      (acc, entry) => {
+        const amount = Number(entry.amount || 0)
+        const method = entry.paymentMethod === 'efectivo' ? 'efectivo' : entry.paymentMethod === 'transferencia' ? 'transferencia' : 'otro'
+
+        if (entry.type === 'ingreso') {
+          acc.totalIncome += amount
+          if (method === 'efectivo') acc.cash += amount
+          if (method === 'transferencia') acc.bank += amount
+        } else {
+          acc.totalExpense += amount
+          if (method === 'efectivo') acc.cash -= amount
+          if (method === 'transferencia') acc.bank -= amount
+        }
+
+        return acc
+      },
+      { totalIncome: 0, totalExpense: 0, balance: 0, cash: 0, bank: 0 },
+    )
+
+    totals.balance = totals.totalIncome - totals.totalExpense
+    return totals
+  }, [filteredTransactions])
+
+  const displayedSummary = filteredSummary
 
   const exportColumns = [
     { key: 'date', label: 'Fecha' },
@@ -131,18 +183,48 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
         </div>
       </div>
 
+      <div className="cashflow-filters" role="group" aria-label="Filtros por fecha">
+        <label>
+          <span>Desde</span>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(event) => setDateFrom(event.target.value)}
+          />
+        </label>
+        <label>
+          <span>Hasta</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(event) => setDateTo(event.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          className="chip-button"
+          onClick={() => {
+            setDateFrom('')
+            setDateTo('')
+          }}
+          disabled={!dateFrom && !dateTo}
+        >
+          Quitar filtro de fechas
+        </button>
+      </div>
+
       <div className="cashflow-summary">
         <article className="cashflow-card cashflow-card-income">
           <h3>Ingresos</h3>
-          <p>{formatCurrency(summary.totalIncome)}</p>
+          <p>{formatCurrency((displayedSummary.totalIncome ?? baseSummary.totalIncome))}</p>
         </article>
         <article className="cashflow-card cashflow-card-expense">
           <h3>Egresos</h3>
-          <p>{formatCurrency(summary.totalExpense)}</p>
+          <p>{formatCurrency((displayedSummary.totalExpense ?? baseSummary.totalExpense))}</p>
         </article>
         <article className="cashflow-card cashflow-card-balance">
-          <h3>Balance</h3>
-          <p>{formatCurrency(summary.balance)}</p>
+          <h3>Saldo</h3>
+          <p>{formatCurrency((displayedSummary.balance ?? baseSummary.balance))}</p>
         </article>
       </div>
 
@@ -150,7 +232,7 @@ const CashflowPanel = ({ data, loading, searchTerm, onAddEntry, onDeleteEntry })
         <div className="loading-panel">Cargando movimientos...</div>
       ) : filteredTransactions.length === 0 ? (
         <div className="empty-state">
-          No hay movimientos que coincidan con la búsqueda.
+          No hay movimientos que coincidan con la búsqueda o el rango de fechas.
         </div>
       ) : (
         <div className="table-wrapper cashflow-table-wrapper">
